@@ -1,0 +1,33 @@
+{
+  "name": "lexis-back",
+  "version": "0.1.0",
+  "description": "Back-end for the language-learning platform Lexis",
+  "readme": "README.md",
+  "license": "MIT",
+  "dependencies": {
+    "jsonwebtoken": "^7.4.3",
+    "kcors": "^2.2.1",
+    "koa": "^2.3.0",
+    "koa-body": "^2.3.0",
+    "koa-convert": "^1.2.0",
+    "koa-csrf": "^3.0.6",
+    "koa-jwt": "^3.2.2",
+    "koa-passport": "^3.0.0",
+    "koa-router": "^7.2.1",
+    "koa-static": "^4.0.1",
+    "mongodb": "^2.2.31",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "chai": "^4.1.1",
+    "dotenv": "^4.0.0",
+    "express-to-koa": "^1.0.6",
+    "graceful-fs": "^4.1.11",
+    "mocha": "^3.5.0"
+  },
+  "scripts": {
+    "devserver": "node --inspect app.js",
+    "test": "mocha ./tests/",
+    "debug-test": "mocha --inspect --inspect-brk ./tests/"
+  }
+}
