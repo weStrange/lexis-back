@@ -10,7 +10,7 @@ describe('User model:', async function() {
   logger.info(`Testing user model. Database ${User.DB.url} and collection ${User.COLLECTION}`);
   it('tests whether connection works', async function() {
     await User.where({username: 'nopestitynopes'}); //this will create the collection implicitly
-    const count = await User.DB.getDb().collection(User.COLLECTION).count();
+    const count = await User.DB.collection(User.COLLECTION).count();
     expect(count).to.equal(0);
   });
   it('inserts a user into the database', async function(){
@@ -36,16 +36,19 @@ describe('User model:', async function() {
     expect(newUsers).to.have.length(3);
   })
   it('updates users in the database', async function(){
-    let updatedCount = await User.update({username: 'penny'}, {favouriteWeapon: 'Jet Hammer'});
+    let updatedCount = await User.update({username: 'penny'}, {avatar: 'Jet Hammer'});
     expect(updatedCount).to.equal(1);
-    let mrNode = await User.find({username: 'mrnode'});
-    expect(mrNode.id).to.be.a('string');
-    mrNode.favouriteWeapon = 'v8';
+    let mrNodes = await User.find({username: 'mrnode'});
+    // expect(mrNode.id).to.be.a('string');
+    let mrNode = mrNodes[0]
+    mrNode.avatar = 'v8';
+    // console.log(mrNode)
     await mrNode.save();
-    mrNode = await User.find({favouriteWeapon: 'v8'});
-    expect(mrNode).to.equal(null);
-    let penny = await User.find({username: 'penny'});
-    expect(penny.favouriteWeapon).to.equal('Jet Hammer');
+    mrNode = (await User.find({avatar: 'v8'}))[0];
+    expect(mrNode).not.to.equal(null);
+    let penny = (await User.find({username: 'penny'}))[0];
+    // console.log('This is Penny', penny)
+    expect(penny.avatar).to.equal('Jet Hammer');
   })
   it('finds many users from the database', async function(){
     let usersWithAvatars = await User.where({avatar: { '$exists': true }});
@@ -53,6 +56,7 @@ describe('User model:', async function() {
   })
   it('cleans up all the users in the database', async function(){
     let allUsers = await User.where();
+    // console.log(allUsers)
     expect(allUsers).to.have.length(4);
     await allUsers[0].delete(); //delete one using instance method
     let count = await User.count();
@@ -66,7 +70,7 @@ describe('User model:', async function() {
     expect(count).to.equal(0);
     //in general you should avoid using anything database-specific outside of the models folder
     //but we are doing it for testing here, so this can be an exception
-    await User.DB.getDb().dropCollection(User.COLLECTION);
+    await User.DB.dropCollection(User.COLLECTION);
   })
 });
 /* Test associations between user and comment

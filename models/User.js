@@ -1,16 +1,18 @@
-const Model = require('./Model');
 const MongoDatabase = require('./MongoDatabase');
 const Association = require('./Association');
+const Model = require('./Model')
 // const Comment = require('./Comment');
 const logger = require('winston');
-const mongodb = require('mongodb');
+const mongoose = require('mongoose');
+const mongodb = require('mongodb')
 
 let connectionString = process.env['MONGO_USER'] && process.env['MONGO_PASSWORD']
 ? `mongodb://${process.env['MONGO_USER']}:${process.env['MONGO_PASSWORD']}@${process.env['MONGO_HOST']}/lexis`
 : `mongodb://${process.env['MONGO_HOST']}/lexis`
 const db = new MongoDatabase(encodeURI(connectionString));
 
-const collectionName = 'users';
+const collectionName = 'User'
+
 
 // TODO: create MongoModel class and extend it instead
 class User extends Model {
@@ -19,7 +21,13 @@ class User extends Model {
     //intiate fields that must exist before any other logic happens
     // this.comments = new Association(Comment, []);
 
+    this.id = data._id || data.id
+    this.username = data.username
+    this.avatar = data.avatar
+/*
     for (let [key, value] of Object.entries(data)) {
+       console.log(data)
+        console.log(key, value)
         switch(key){
           case 'id':
           case '_id':
@@ -31,18 +39,10 @@ class User extends Model {
           case 'avatar':
             this.avatar = value;
             break;
-    /*      case 'comments':
-            if(!(value instanceof Array)) logger.error(`comments supplied to User constructor, but wasn't an array, problems may ensue!`)
-            this.comments = new Association(Comment, comments);
-            break; */
           default:
-            if(typeof value !== 'function'){
-              //you might wanna do more checks here
-              this[key] = value;
-            }
             break;
         }
-    }
+    } */
   }
 
   //allow access to the raw mongodb driver's database instance, if it exists (ensureConnected called at least once)
@@ -73,42 +73,46 @@ class User extends Model {
     return await User.DB.count(query, User.COLLECTION);
   }
 
-  static async where(query) {
+  static async where(query){
     //transform query for this model
     query = User.transformQuery(query);
 
-    const cursor = await User.DB.select(query, User.COLLECTION);
-    //CAREFUL: cursor.toArray() will get ALL documents and put them in memory
-    const results = await cursor.toArray();
-    return results.map(data=>new User(data));
+    const results = await User.DB.select(query, User.COLLECTION);
+    console.log(results)
+    return results.map(p => new User(p));
   }
 
   static async find(query){
     let results = await User.DB.select(query, User.COLLECTION);
-    results = await results.next();
+    // results = await results.next();
     if(!results) return null;
-    return new User(results);
+    console.log('Beginning')
+    console.log(results)
+    console.log(results.map(data => new User(data)))
+    console.log('End')
+    return results.map(data => new User(data));
   }
 
   static async delete(query){
     query = User.transformQuery(query);
     const result = await User.DB.delete(query, User.COLLECTION);
-    return result.deletedCount;
+    return result.result.ok
   }
 
   static async update(query, data){
     query = User.transformQuery(query);
     const result = await User.DB.update(query, data, User.COLLECTION);
-    return result.modifiedCount;
+    // console.log(result)
+    return result.ok;
   }
 
   static async insert(data){
     data = data.map(ud=>new User(ud).serialize(true));
     const result = await User.DB.insert(data, User.COLLECTION);
-    return result.ops.map(data => new User(data));
+    return result.map(data => new User(data));
   }
 
-  serialize(withId){
+  serialize(withId) {
     const data = super.serialize();
 
     //this is essentially the reverse if your constructor
@@ -167,20 +171,24 @@ class User extends Model {
 
   async save(id){
     let data = this.serialize();
-    if(this.id){
+
+    if(this.id || this._id){
+      this.id = this.id || this._id
       //you could also do things like new mongodb.ObjectId(this.id) here if you want to be 100% compliant
-      await User.DB.update({_id: this.id}, data, User.COLLECTION);
+      return await User.DB.update({ _id: this.id }, data, User.COLLECTION)
     } else {
       if(id) data._id = id; //allow saving under a custom ID
       //TODO: add your validations here
-      let insertOp = await User.DB.insert(data, User.COLLECTION);
-      this.id = insertOp.insertedId.valueOf().toString(); //by default valueOf of a Mongo ID is apparently a buffer, we are assuming encoding to be UTF8 here
+      let user = await User.DB.insert(data, User.COLLECTION)
+      // console.log(insertOp)
+      this.id = user._id.toString()
     }
     return this;
   }
 
-  async delete(){
-    const results = await User.DB.delete({_id: {'$in': [new mongodb.ObjectId(this.id)]}}, User.COLLECTION);
+  async delete() {
+    const result = await User.DB.delete({ _id: this.id }, User.COLLECTION)
+    // const results = await User.DB.delete({_id: {'$in': [new mongodb.ObjectId(this.id)]}}, User.COLLECTION);
     //do something with results, e.g. if CASCADE is not set, you might need to run through all associations and delete them all
     return this;
   }

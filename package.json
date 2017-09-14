@@ -16,12 +16,15 @@
     "koa-router": "^7.2.1",
     "koa-static": "^4.0.1",
     "mongodb": "^2.2.31",
+    "mongoose": "^4.11.11",
+    "mongoose-schema-extend": "^0.2.2",
     "winston": "^2.3.1"
   },
   "devDependencies": {
     "chai": "^4.1.1",
     "dotenv": "^4.0.0",
     "express-to-koa": "^1.0.6",
+    "flow-bin": "^0.54.1",
     "graceful-fs": "^4.1.11",
     "mocha": "^3.5.0"
   },

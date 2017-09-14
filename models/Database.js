@@ -1,11 +1,11 @@
+const readLine = require('readline');
+
 class Database {
   constructor(url, driver) {
     this.url = url;
     this.driver = driver;
     this.db;
 
-
-    const readLine = require('readline');
     if (process.platform === 'win32') {
       const rl = readLine.createInterface({input: process.stdin, output: process.stdout});
       rl.on('SIGINT', () => {
@@ -13,7 +13,18 @@ class Database {
       });
     }
 
-    process.on('SIGINT', this.disconnect);
+    process.on(
+      'SIGINT',
+      () => this.disconnect(() => process.exit(0))
+    );
+    process.on(
+      'SIGTERM',
+      () => this.disconnect(() => process.exit(0))
+    );
+    process.once(
+      'SIGUSR2',
+      () => this.disconnect(() => process.kill(process.pid, 'SIGUSR2'))
+    );
   }
 
   async ensureConnected(tableName){
