@@ -7,6 +7,10 @@ module.exports = {
     "excludedMethods": [ "GET", "HEAD", "OPTIONS" ],
     "disableQuery": false
   },
+  auth: {
+    accessTokenTtl: 60 * 5,
+    refreshTokenTtl: 60 * 1
+  },
   keys: {
     session: process.env['SESSION_SECRET'] || 'session-secret'
   },

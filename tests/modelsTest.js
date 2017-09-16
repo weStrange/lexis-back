@@ -42,12 +42,10 @@ describe('User model:', async function() {
     // expect(mrNode.id).to.be.a('string');
     let mrNode = mrNodes[0]
     mrNode.avatar = 'v8';
-    // console.log(mrNode)
     await mrNode.save();
     mrNode = (await User.find({avatar: 'v8'}))[0];
     expect(mrNode).not.to.equal(null);
     let penny = (await User.find({username: 'penny'}))[0];
-    // console.log('This is Penny', penny)
     expect(penny.avatar).to.equal('Jet Hammer');
   })
   it('finds many users from the database', async function(){
@@ -56,7 +54,6 @@ describe('User model:', async function() {
   })
   it('cleans up all the users in the database', async function(){
     let allUsers = await User.where();
-    // console.log(allUsers)
     expect(allUsers).to.have.length(4);
     await allUsers[0].delete(); //delete one using instance method
     let count = await User.count();

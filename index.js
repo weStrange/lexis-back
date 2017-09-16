@@ -4,6 +4,7 @@ const bodyParser = require('koa-body');
 const jwt = require('koa-jwt');
 const serve = require('koa-static');
 const path = require('path');
+const passport = require('./auth/passport');
 
 require('dotenv').config()
 
@@ -20,8 +21,7 @@ const responder = require('./middleware/responder');
 const config = require('./config');
 const routing = require('./middleware/routing')();
 
-const app = new Koa();
-
+const app = new Koa()
 // app.proxy = true; // this is needed if running from behind a reverse proxy
 
 //log response before sending out
@@ -42,21 +42,26 @@ app.use(responder({appRoot: config.appRoot, app: app}));
 app.use(bodyParser());
 //app.use(netLogger.request());
 //app.use(new CSRF(config.csrf));
-
 //your authentication middleware
+app.use(passport.initialize())
+
 app.use(authenticate.routes());
 app.use(authenticate.allowedMethods());
 
-//jwt token verification for any route containing /api/ segment (unless they are GET routes)
+// app.use(passport.session())
+// TODO: uncomment and configure properly
+/*
 app.use(
-  jwt({secret: 'get-tyranasaurus-rekt'})
-    // .unless({method: 'GET', path: [/^((?!\/api[\/$\s]).)+$/g]})
+  jwt({secret: process.env['SESSION_SECRET']})
+    // .unless({path: [/^((?!\/api[\/$\s]).)+$/g]})
 );
-
-
+*/
 //routing - will call your controllers, etc.
 app.use(routing.routes());
 app.use(routing.allowedMethods());
+
+
+//jwt token verification for any route containing /api/ segment (unless they are GET routes)
 
 //if you want to have some middleware running AFTER some controllers (controller will have to call await next)
 //remember that after controllers the logic will flow UP the stack so every middleware's code that comes

@@ -2,9 +2,11 @@
 const path = require('path');
 const logger = require('winston');
 
+const RESPONSE_DEFAULT_TYPE ='RT_DEFAULT';
 const RESPONSE_TYPE_HTML =   'RT_HTML';
 const RESPONSE_TYPE_JSON =   'RT_JSON';
 const RESPONSE_TYPE_ERROR =  'RT_ERROR';
+const RESPONSE_TYPE_GRAPHQL ='RT_GRAPHQL'
 
 //irrelevant right now
 //const RESPONSE_TYPE_WS =     'RT_WEBSOCKET';
@@ -14,7 +16,7 @@ const RESPONSE_TYPE_ERROR =  'RT_ERROR';
 class Renderer {
   constructor(data, type, view){
     this.data = data || {};
-    this.type = type || RESPONSE_TYPE_HTML;
+    this.type = type || RESPONSE_DEFAULT_TYPE;
     // this.view = view || 'views/notfound.pug';
     if(!Renderer.APP_ROOT) Renderer.APP_ROOT = '../';
 /*
@@ -32,9 +34,22 @@ class Renderer {
       logger.warn(`ctx.rendered flag is set to true, renderer will skip`);
       return ctx;
     }
-    switch(this.type){
+
+    switch(this.type) {
+      case RESPONSE_DEFAULT_TYPE:
+        try {
+          this.data = JSON.stringify(ctx.body)
+          this.type = RESPONSE_TYPE_JSON
+        }
+        catch (error) {
+          logger.error(error);
+        }
+
       case RESPONSE_TYPE_HTML:
         // TODO: handle HTML responses here
+
+      case RESPONSE_TYPE_GRAPHQL:
+          break;
       case RESPONSE_TYPE_JSON:
         ctx.body = JSON.stringify(this.data);
         break;
@@ -82,12 +97,19 @@ module.exports = function responder(options){
   Renderer.setAppRoot(appRoot);
 
   app.context.view = function ctxView(view, locals){
+      console.log('HTML is set')
     this.renderer = new Renderer(locals, RESPONSE_TYPE_HTML, view);
   }
 
   app.context.json = function ctxJson(data){
     JSON.stringify(data); //test that this is valid JSON - will throw otherwise
+    console.log('JSON is set')
     this.renderer = new Renderer(data, RESPONSE_TYPE_JSON);
+  }
+
+  app.context.graphql = function ctxGraphql() {
+    console.log('Graphql is set')
+    this.renderer = new Renderer({}, RESPONSE_TYPE_GRAPHQL)
   }
 
   app.context.error = function ctxError(data){

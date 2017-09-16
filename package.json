@@ -5,10 +5,18 @@
   "readme": "README.md",
   "license": "MIT",
   "dependencies": {
+    "apollo-server-koa": "^1.1.2",
+    "body-parser": "^1.18.1",
+    "crypto": "^1.0.1",
+    "es6-promisify": "^5.0.0",
+    "graphql": "^0.11.3",
+    "graphql-server-koa": "^1.1.2",
+    "graphql-tools": "^1.2.2",
     "jsonwebtoken": "^7.4.3",
     "kcors": "^2.2.1",
     "koa": "^2.3.0",
     "koa-body": "^2.3.0",
+    "koa-bodyparser": "^4.2.0",
     "koa-convert": "^1.2.0",
     "koa-csrf": "^3.0.6",
     "koa-jwt": "^3.2.2",
@@ -18,6 +26,8 @@
     "mongodb": "^2.2.31",
     "mongoose": "^4.11.11",
     "mongoose-schema-extend": "^0.2.2",
+    "passport-local": "^1.0.0",
+    "redis": "^2.8.0",
     "winston": "^2.3.1"
   },
   "devDependencies": {
@@ -29,7 +39,7 @@
     "mocha": "^3.5.0"
   },
   "scripts": {
-    "devserver": "node --inspect app.js",
+    "devserver": "node --inspect index.js",
     "test": "mocha ./tests/",
     "debug-test": "mocha --inspect --inspect-brk ./tests/"
   }

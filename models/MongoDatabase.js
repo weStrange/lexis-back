@@ -21,7 +21,7 @@ class MongoDatabase extends Database {
     const collection = this.collection(collectionName);
 
     return await new Promise((res, rej) => {
-        // console.log(collectionName)
+
         collection.find(query, (err, result) => {
           if (err) {
             rej(err)
@@ -96,7 +96,6 @@ class MongoDatabase extends Database {
       })
     })
     logger.info(`Deleted ${result.deletedCount} objects in collection ${collectionName}`);
-    console.log(result)
 
     return result
   }

@@ -24,25 +24,6 @@ class User extends Model {
     this.id = data._id || data.id
     this.username = data.username
     this.avatar = data.avatar
-/*
-    for (let [key, value] of Object.entries(data)) {
-       console.log(data)
-        console.log(key, value)
-        switch(key){
-          case 'id':
-          case '_id':
-            this.id = value.toString();
-            break;
-          case 'username':
-            this.username = value;
-            break;
-          case 'avatar':
-            this.avatar = value;
-            break;
-          default:
-            break;
-        }
-    } */
   }
 
   //allow access to the raw mongodb driver's database instance, if it exists (ensureConnected called at least once)
@@ -78,7 +59,7 @@ class User extends Model {
     query = User.transformQuery(query);
 
     const results = await User.DB.select(query, User.COLLECTION);
-    console.log(results)
+
     return results.map(p => new User(p));
   }
 
@@ -86,10 +67,7 @@ class User extends Model {
     let results = await User.DB.select(query, User.COLLECTION);
     // results = await results.next();
     if(!results) return null;
-    console.log('Beginning')
-    console.log(results)
-    console.log(results.map(data => new User(data)))
-    console.log('End')
+
     return results.map(data => new User(data));
   }
 
@@ -102,7 +80,7 @@ class User extends Model {
   static async update(query, data){
     query = User.transformQuery(query);
     const result = await User.DB.update(query, data, User.COLLECTION);
-    // console.log(result)
+
     return result.ok;
   }
 
@@ -180,7 +158,7 @@ class User extends Model {
       if(id) data._id = id; //allow saving under a custom ID
       //TODO: add your validations here
       let user = await User.DB.insert(data, User.COLLECTION)
-      // console.log(insertOp)
+
       this.id = user._id.toString()
     }
     return this;
