@@ -1,11 +1,14 @@
+/* flow */
+'use strict'
+
 module.exports = {
   csrf: {
-    "invalidSessionSecretMessage": "Invalid session secret",
-    "invalidSessionSecretStatusCode": 403,
-    "invalidTokenMessage": "Invalid CSRF token",
-    "invalidTokenStatusCode": 403,
-    "excludedMethods": [ "GET", "HEAD", "OPTIONS" ],
-    "disableQuery": false
+    'invalidSessionSecretMessage': 'Invalid session secret',
+    'invalidSessionSecretStatusCode': 403,
+    'invalidTokenMessage': 'Invalid CSRF token',
+    'invalidTokenStatusCode': 403,
+    'excludedMethods': [ 'GET', 'HEAD', 'OPTIONS' ],
+    'disableQuery': false
   },
   auth: {
     accessTokenTtl: 60 * 5,

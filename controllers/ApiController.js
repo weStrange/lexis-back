@@ -1,9 +1,14 @@
-const Controller = require('./Controller');
+/* flow */
+'use strict'
+
+const Controller = require('./Controller')
 
 class ApiController extends Controller {
-  constructor(router){
-    super(router);
+  /*
+  constructor (router) {
+    super(router)
   }
+  */
 }
 
-module.exports = ApiController;
+module.exports = ApiController

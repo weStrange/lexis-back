@@ -1,9 +1,11 @@
-const ApiController = require('./ApiController');
-const koaBody = require('koa-bodyparser');
-const bodyParser = require('body-parser');
+/* flow */
+'use strict'
 
-var { graphqlKoa, graphiqlKoa } = require('apollo-server-koa');
-var { makeExecutableSchema } = require('graphql-tools');
+const ApiController = require('./ApiController')
+const koaBody = require('koa-bodyparser')
+
+var { graphqlKoa, graphiqlKoa } = require('apollo-server-koa')
+var { makeExecutableSchema } = require('graphql-tools')
 
 var typeDefs = [`
 type Query {
@@ -12,17 +14,17 @@ type Query {
 
 schema {
   query: Query
-}`];
+}`]
 
 var resolvers = {
   Query: {
-    hello(root) {
-      return 'world';
+    hello (root) {
+      return 'world'
     }
   }
-};
+}
 
-const schema = makeExecutableSchema({typeDefs, resolvers});
+const schema = makeExecutableSchema({typeDefs, resolvers})
 
 const customGraphqlMiddleware = function (
   ctx,
@@ -33,13 +35,13 @@ const customGraphqlMiddleware = function (
 }
 
 class UserApiController extends ApiController {
-  constructor(router){
-    super(router);
+  constructor (router) {
+    super(router)
     // console.log(graphqlKoa({ schema }))
-    router.post('/graphql', koaBody(), customGraphqlMiddleware, graphqlKoa({ schema }));
-    router.get('/graphql', graphqlKoa({ schema }));
-    router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }));
+    router.post('/graphql', koaBody(), customGraphqlMiddleware, graphqlKoa({ schema }))
+    router.get('/graphql', graphqlKoa({ schema }))
+    router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
   }
 }
 
-module.exports = UserApiController;
+module.exports = UserApiController

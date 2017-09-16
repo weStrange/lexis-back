@@ -1,15 +1,18 @@
-const passport = require("koa-passport");
-let LocalStrategy = require("passport-local").Strategy;
+/* flow */
+'use strict'
 
-passport.use(new LocalStrategy((username, password, done) => {
-  if (username === "test" && password === "test") {
+const passport = require('koa-passport')
+let LocalStrategy = require('passport-local').Strategy
+
+passport.use(new LocalStrategy((username: string, password: string, done: any) => {
+  if (username === 'test' && password === 'test') {
     done(null, {
-      username: "test",
-      verified: "true"
-    }, { message: 'Success' });
-  } else if (username !== "test" || password !== "test") {
-    done(null, false, { message: 'Incorrect username or password.' });
+      username: 'test',
+      verified: 'true'
+    }, { message: 'Success' })
+  } else if (username !== 'test' || password !== 'test') {
+    done(null, false, { message: 'Incorrect username or password.' })
   }
-}));
+}))
 
 module.exports = passport

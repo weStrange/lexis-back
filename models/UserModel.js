@@ -1,4 +1,9 @@
-const mongoose = require('mongoose');
+/* flow */
+'use strict'
+
+const mongoose = require('mongoose')
+const crypto = require('crypto')
+const jwt = require('koa-jwt')
 
 var userSchema = new mongoose.Schema({
   username: {
@@ -26,7 +31,7 @@ userSchema.methods.validatePassport = function (password) {
   return this.hash === hash
 }
 
-userSchema.methods.generateJwt = function (){
+userSchema.methods.generateJwt = function () {
   let expiry = new Date()
   expiry.setDate(expiry.getTime() + 1000 * 60 * 20) // set expiry to 20 minutes
 

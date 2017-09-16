@@ -1,12 +1,15 @@
-/*eslint { "global-require": 0 }*/
-const path = require('path');
-const controllers = {};
+/* eslint { "global-require": 0 } */
+/* flow */
+'use strict'
 
-require('fs').readdirSync(__dirname).forEach(function (file) {
+const path = require('path')
+const controllers = {}
+
+require('fs').readdirSync(__dirname).forEach(function (file: string) {
   /* Ignore base files */
-  if (file.match(/(index|^Controller|^ApiController)(\.js)/)) return;
+  if (file.match(/(index|^Controller|^ApiController)(\.js)/)) return
   /* Store module with its name (from filename) */
-  controllers[path.basename(file, '.js')] = require(path.join(__dirname, file));
-});
+  controllers[path.basename(file, '.js')] = require(path.join(__dirname, file))
+})
 
-module.exports = controllers;
+module.exports = controllers
