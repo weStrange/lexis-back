@@ -8,10 +8,11 @@ const logger = require('winston')
 module.exports = function route (options) {
   // Remember - if you don't call await next(); then this middleware
 
-  logger.debug(`loading ${Object.keys(controllers).length} controllers...`)
+  // logger.debug(`loading ${Object.keys(controllers).length} controllers...`)
   for (let controllerName in controllers) {
-    if (controllers.hasOwnProperty(controllerName)) {
+    if (controllers[controllerName]) {
       logger.debug(`loading ${controllerName}`)
+      // eslint-ignore
       controllers[controllerName](router)
       logger.debug(`${controllerName} loaded successfully`)
     }

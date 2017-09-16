@@ -23,9 +23,9 @@ const generateJwtId = async () => {
 }
 
 module.exports.generateTokens = async (
-  payload: any,
-  secret: string,
-  opts: any = {}
+  payload,
+  secret,
+  opts = {}
 ) => {
   try {
     const { auth } = config

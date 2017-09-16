@@ -1,7 +1,7 @@
 /* flow */
 'use strict'
 
-const ApiController = require('./ApiController')
+const configureApiController = require('./ApiController')
 const koaBody = require('koa-bodyparser')
 
 var { graphqlKoa, graphiqlKoa } = require('apollo-server-koa')
@@ -34,14 +34,12 @@ const customGraphqlMiddleware = function (
   return next()
 }
 
-class UserApiController extends ApiController {
-  constructor (router) {
-    super(router)
-    // console.log(graphqlKoa({ schema }))
-    router.post('/graphql', koaBody(), customGraphqlMiddleware, graphqlKoa({ schema }))
-    router.get('/graphql', graphqlKoa({ schema }))
-    router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
-  }
+function configureUserApiController (router) {
+  configureApiController(router)
+
+  router.post('/graphql', koaBody(), customGraphqlMiddleware, graphqlKoa({ schema }))
+  router.get('/graphql', graphqlKoa({ schema }))
+  router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
 }
 
-module.exports = UserApiController
+module.exports = configureUserApiController

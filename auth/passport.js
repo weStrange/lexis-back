@@ -4,7 +4,7 @@
 const passport = require('koa-passport')
 let LocalStrategy = require('passport-local').Strategy
 
-passport.use(new LocalStrategy((username: string, password: string, done: any) => {
+passport.use(new LocalStrategy((username, password, done) => {
   if (username === 'test' && password === 'test') {
     done(null, {
       username: 'test',

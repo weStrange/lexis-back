@@ -35,23 +35,19 @@
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.0",
     "babel-jest": "^21.0.2",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-preset-flow": "^6.23.0",
     "chai": "^4.1.1",
     "dotenv": "^4.0.0",
     "eslint": "^4.7.0",
-    "eslint-plugin-flowtype": "^2.35.1",
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-standard": "^3.0.1",
     "express-to-koa": "^1.0.6",
-    "flow-bin": "^0.54.1",
     "graceful-fs": "^4.1.11",
     "jest": "^21.1.0",
     "standard": "^10.0.3"
   },
   "scripts": {
     "devserver": "node --inspect index.js",
-    "test": "standard && flow && jest"
+    "test": "standard && jest"
   },
   "standard": {
     "ignore": [
@@ -60,9 +56,6 @@
     "global": [
       "localStorage",
       "alert"
-    ],
-    "plugins": [
-      "flowtype"
     ],
     "parser": "babel-eslint"
   }
