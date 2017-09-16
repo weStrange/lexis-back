@@ -8,6 +8,10 @@ const passport = require('./auth/passport');
 
 require('dotenv').config()
 
+if (module.hot) {
+  module.hot.accept("./auth/passport", () => {});
+}
+
 // const koaWebpack = require('koa-webpack');
 // const webpackConfig = require('./webpack.config');
 
@@ -50,12 +54,12 @@ app.use(authenticate.allowedMethods());
 
 // app.use(passport.session())
 // TODO: uncomment and configure properly
-/*
+
 app.use(
-  jwt({secret: process.env['SESSION_SECRET']})
+  jwt({secret: process.env['SESSION_SECRET'], debug: true})
     // .unless({path: [/^((?!\/api[\/$\s]).)+$/g]})
 );
-*/
+
 //routing - will call your controllers, etc.
 app.use(routing.routes());
 app.use(routing.allowedMethods());

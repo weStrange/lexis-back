@@ -4,6 +4,14 @@ const config = require('../config');
 const passport = require('../auth/passport');
 let { generateTokens } = require("../auth/oauth");
 
+if (module.hot) {
+  module.hot.accept("../auth/oauth", () => {});
+}
+
+if (module.hot) {
+  module.hot.accept("../auth/passport", () => {});
+}
+
 const localAuthHandler = (ctx, next) => {
   return passport.authenticate('local', async (err, user, info) => {
     if (user === false) {
