@@ -2,7 +2,7 @@
 'use strict'
 
 class Association extends Array {
-  constructor (classObject: any, records: Array<any>) {
+  constructor (classObject, records) {
     super()
     if (typeof classObject !== 'function') throw new Error(`Attempted to pass ${classObject} as an association class, but it's type was ${typeof classObject}`)
     if (!records) throw new Error('Association invalid - records\'s were undefined, must be array')
@@ -18,7 +18,7 @@ class Association extends Array {
 
   // This can be extended to support ordering, or custom query parameters for the underlying
   // associated models, or whatever else you might need
-  async get (indexOrOptions: any) {
+  async get (indexOrOptions) {
     let records = await this.model.where(this.records)
     for (let i = 0; i < this.length; i++) {
       // you can probably just assume the order here

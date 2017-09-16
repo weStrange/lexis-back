@@ -69,6 +69,6 @@ app.use(routing.allowedMethods())
 // if you want to have some middleware running AFTER some controllers (controller will have to call await next)
 // remember that after controllers the logic will flow UP the stack so every middleware's code that comes
 // after the await next() will run too
-app.listen(3000)
+app.listen(7000)
 
-logger.info('Application running on port 3000')
+logger.info('Application running on port 7000')

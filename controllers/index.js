@@ -3,9 +3,9 @@
 'use strict'
 
 const path = require('path')
-const controllers = {}
+const controllers = []
 
-require('fs').readdirSync(__dirname).forEach(function (file: string) {
+require('fs').readdirSync(__dirname).forEach(function (file) {
   /* Ignore base files */
   if (file.match(/(index|^Controller|^ApiController)(\.js)/)) return
   /* Store module with its name (from filename) */

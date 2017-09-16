@@ -20,7 +20,7 @@ class Utils {
 
     if (!ignoreRegex) ignoreRegex = /(index)(\.js)/
 
-    files.forEach(function (file: string) {
+    files.forEach(function (file) {
       /* Ignore matched files */
       if (file.match(ignoreRegex)) return
       /* Store module with its name (from filename) */
