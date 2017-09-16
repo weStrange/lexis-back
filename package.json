@@ -1,0 +1,69 @@
+{
+  "name": "lexis-back",
+  "version": "0.1.0",
+  "description": "Back-end for the language-learning platform Lexis",
+  "readme": "README.md",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server-koa": "^1.1.2",
+    "body-parser": "^1.18.1",
+    "crypto": "^1.0.1",
+    "es6-promisify": "^5.0.0",
+    "graphql": "^0.11.3",
+    "graphql-server-koa": "^1.1.2",
+    "graphql-tools": "^1.2.2",
+    "jsonwebtoken": "^7.4.3",
+    "kcors": "^2.2.1",
+    "koa": "^2.3.0",
+    "koa-body": "^2.3.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-convert": "^1.2.0",
+    "koa-csrf": "^3.0.6",
+    "koa-jwt": "^3.2.2",
+    "koa-passport": "^3.0.0",
+    "koa-router": "^7.2.1",
+    "koa-static": "^4.0.1",
+    "mongodb": "^2.2.31",
+    "mongoose": "^4.11.11",
+    "mongoose-schema-extend": "^0.2.2",
+    "passport-local": "^1.0.0",
+    "redis": "^2.8.0",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.0",
+    "babel-jest": "^21.0.2",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-preset-flow": "^6.23.0",
+    "chai": "^4.1.1",
+    "dotenv": "^4.0.0",
+    "eslint": "^4.7.0",
+    "eslint-plugin-flowtype": "^2.35.1",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-standard": "^3.0.1",
+    "express-to-koa": "^1.0.6",
+    "flow-bin": "^0.54.1",
+    "graceful-fs": "^4.1.11",
+    "jest": "^21.1.0",
+    "standard": "^10.0.3"
+  },
+  "scripts": {
+    "devserver": "node --inspect index.js",
+    "test": "standard && flow && jest"
+  },
+  "standard": {
+    "ignore": [
+      "build"
+    ],
+    "global": [
+      "localStorage",
+      "alert"
+    ],
+    "plugins": [
+      "flowtype"
+    ],
+    "parser": "babel-eslint"
+  }
+}
