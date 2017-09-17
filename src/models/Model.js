@@ -6,7 +6,11 @@
 // if(user instanceof Model) OR
 // if(User.prototype instanceof Model) if you don't want to spawn instances
 class Model {
-  constructor (data) {
+  id: any;
+  createdAt: Date;
+  updatedAt: Date
+
+  constructor (data: any) {
     this.id = data.id
     this.createdAt = data.createdAt
     this.updatedAt = data.updatedAt
