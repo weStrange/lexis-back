@@ -1,8 +1,6 @@
 /* @flow */
 'use strict'
 
-import crypto from 'crypto'
-import logger from 'winston'
 import mongodb from 'mongodb'
 
 import { List } from 'immutable'
@@ -11,7 +9,6 @@ import MongoDatabase from './MongoDatabase'
 import Utils from '../utils'
 // import Model from './Model'
 import type {
-  Gender,
   User as UserType,
   CollectionData,
   Credentials,
@@ -48,12 +45,12 @@ class User {
 
   // allow access to the raw mongodb driver's database instance, if it exists (ensureConnected called at least once)
   // this is like a getter for private static variable in Java
-  static get DB () {
+  static getDb (): any {
     return db
   }
 
   // collection name of the model
-  static get COLLECTION () {
+  static getCollectionName (): string {
     return collectionName
   }
 
@@ -71,14 +68,14 @@ class User {
   static async count (query: any): Promise<number> {
     query = User.transformQuery(query)
 
-    return User.DB.count(query, User.COLLECTION)
+    return User.getDb().count(query, User.getCollectionName())
   }
-
+/*
   static async where (query: any): Promise<List<User>> {
     // transform query for this model
     query = User.transformQuery(query)
 
-    const results = await User.DB.select(query, User.COLLECTION)
+    const results = await User.getDb().select(query, User.getCollectionName())
 
     let filtered = List()
     results
@@ -90,9 +87,9 @@ class User {
 
     return filtered.map(data => new User(data))
   }
-
+*/
   static async find (query: any): Promise<List<User>> {
-    let results = await User.DB.select(query, User.COLLECTION)
+    let results = await User.getDb().select(query, User.getCollectionName())
     // results = await results.next();
     if (!results) return List()
 
@@ -118,7 +115,7 @@ class User {
   }
 
   static async findCreds (email: string): Promise<Credentials | null> {
-    let results = await User.DB.select({ email }, User.COLLECTION)
+    let results = await User.getDb().select({ email }, User.getCollectionName())
     let firstResult = results.first()
     // results = await results.next();
     if (
@@ -138,23 +135,27 @@ class User {
 
   static async delete (query: any): Promise<number> {
     query = User.transformQuery(query)
-    const result = await User.DB.delete(query, User.COLLECTION)
+    const result = await User.getDb().delete(query, User.getCollectionName())
     return result.result.ok
   }
 
   static async update (query: any, data: UserType, credentials: Credentials): Promise<number> {
     query = User.transformQuery(query)
-    const result = await User.DB.update(
+    const result = await User.getDb().update(
       query,
       wrapData({ ...data, ...credentials }),
-      User.COLLECTION
+      User.getCollectionName()
     )
 
     return result.ok
   }
 
   static async insert (data: UserType, credentials: Credentials): Promise<User> {
-    let result = await User.DB.insert(wrapData({ ...data, ...credentials }), User.COLLECTION)
+    let result = await User.getDb()
+      .insert(
+        wrapData({ ...data, ...credentials }),
+        User.getCollectionName()
+      )
 
     let results = List.of(result)
     let filtered = List()

@@ -4,6 +4,7 @@
 import mongoose from 'mongoose'
 import logger from 'winston'
 import readLine from 'readline'
+import dotenv from 'dotenv'
 
 import { List } from 'immutable'
 
@@ -14,6 +15,8 @@ import type {
   CollectionData,
   CollectionDataType
 } from '../types'
+
+dotenv.config()
 
 const CONNECTION_POOL = {}
 
@@ -49,7 +52,7 @@ class MongoDatabase {
     query: any,
     collectionName: CollectionName
   ): Promise<List<CollectionData>> {
-    await this.ensureConnected(collectionName)
+    await this.ensureConnected()
 
     if (typeof query === 'string') query = {_id: query}
 
@@ -70,10 +73,10 @@ class MongoDatabase {
     data: CollectionData,
     collectionName: CollectionName
   ): Promise<CollectionData> {
-    await this.ensureConnected(collectionName)
+    await this.ensureConnected()
 
     const collection = await this.collection(collectionName)
-          console.log('Here is the user', data)
+
     let result = await new Promise((resolve, reject) => {
       collection.create(data.payload, (err: Error, result: CollectionDataType) => {
         if (err) {
@@ -93,7 +96,7 @@ class MongoDatabase {
     data: CollectionData,
     collectionName: CollectionName
   ): Promise<any> {
-    await this.ensureConnected(collectionName)
+    await this.ensureConnected()
 
     const collection = this.collection(collectionName)
 
@@ -112,7 +115,7 @@ class MongoDatabase {
   }
 
   async delete (query: any, collectionName: CollectionName): Promise<any> {
-    await this.ensureConnected(collectionName)
+    await this.ensureConnected()
 
     const collection = this.collection(collectionName)
     let result = await new Promise((resolve, reject) => {
@@ -130,7 +133,7 @@ class MongoDatabase {
   }
 
   async count (query: any, collectionName: CollectionName): Promise<number> {
-    await this.ensureConnected(collectionName)
+    await this.ensureConnected()
 
     return this.collection(collectionName).find(query).count()
   }
@@ -172,11 +175,13 @@ class MongoDatabase {
   }
 
   async dropCollection (collectionName: CollectionName) {
-    mongoose.connection.db.dropCollection(collectionName)
+    const collection = this.collection(collectionName)
+
+    collection.collection.drop()
   }
 
-  async ensureConnected (tableName: string) {
-    if (!this.db) await this.connect(tableName)
+  async ensureConnected () {
+    if (!this.db) await this.connect()
   }
 }
 

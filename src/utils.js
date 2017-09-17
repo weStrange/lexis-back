@@ -2,10 +2,6 @@
 /* @flow */
 'use strict'
 
-import config from './config'
-import logger from 'winston'
-import path from 'path'
-
 import type {
   UserWithCreds,
   User

@@ -2,7 +2,6 @@
 'use strict'
 
 import getRouter from 'koa-router'
-let authRoutes = getRouter()
 
 import passport from '../auth/passport'
 import { generateTokens, getHashAndSalt } from '../auth/oauth'
@@ -13,7 +12,6 @@ import Utils from '../utils'
 import type {
   InputCreds,
   User as UserType,
-  UserWithCreds,
   Credentials
 } from '../types'
 
@@ -26,6 +24,8 @@ if (module.hot) {
   // $FlowIgnore
   module.hot.accept('../auth/passport', () => {})
 }
+
+let authRoutes = getRouter()
 
 function localAuthHandler (ctx: any, next: () => void) {
   return passport.authenticate('local', async (err, user: InputCreds, info) => {
@@ -67,7 +67,6 @@ async function registrationHandler (ctx, next) {
   }
 
   if (!(await User.findOne({ email: payload.email }))) {
-
     let result = await User.insert(newUser, creds)
 
     ctx.body = result.serialize(false)
@@ -75,7 +74,6 @@ async function registrationHandler (ctx, next) {
 
   return next()
 }
-
 
 export default function authenticate () {
   // authRoutes.post('/login/callback', loginWithRemoteService); //return the token with information received from remote login provider

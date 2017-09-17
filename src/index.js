@@ -5,28 +5,32 @@ import destroyable from 'server-destroy'
 import Koa from 'koa'
 import bodyParser from 'koa-body'
 import jwt from 'koa-jwt'
-
-require('dotenv').config()
+import logger from 'winston'
+import dotenv from 'dotenv'
 
 import passport from './auth/passport'
+import configureAuth from './middleware/authenticate'
+import responder from './middleware/responder'
+import config from './config'
+import configureRouting from './middleware/routing'
+
 if (module.hot) {
   // $FlowIgnore
   module.hot.accept('./auth/passport', () => {})
 }
 
+dotenv.config()
+
 // const koaWebpack = require('koa-webpack');
 // const webpackConfig = require('./webpack.config');
 
-import logger from 'winston'
 logger.remove(logger.transports.Console)
 logger.add(logger.transports.Console, { level: 'debug', colorize: true })
 
-import configureAuth from './middleware/authenticate'
 let authenticate = configureAuth()
-import responder from './middleware/responder'
+
 // const netLogger = require('./middleware/logger');
-import config from './config'
-import configureRouting from './middleware/routing'
+
 let routing = configureRouting()
 
 const app = new Koa()
