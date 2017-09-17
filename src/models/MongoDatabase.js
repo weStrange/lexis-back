@@ -8,7 +8,11 @@ import readLine from 'readline'
 import Database from './Database'
 import userModel from './mongoose/UserModel'
 
-import type { CollectionName, CollectionData } from '../types'
+import type {
+  CollectionName,
+  CollectionData,
+  CollectionDataType
+} from '../types'
 
 const CONNECTION_POOL = {}
 
@@ -51,12 +55,12 @@ class MongoDatabase {
     const collection = this.collection(collectionName)
 
     return new Promise((resolve, reject) => {
-      collection.find(query, (err, result) => {
+      collection.find(query, (err: Error, result: Array<CollectionDataType>) => {
         if (err) {
           reject(err)
         }
 
-        resolve(result.map((p) => ({ type: 'user', payload: p })))
+        resolve(result.map((p) => wrapResult(p, collectionName)))
       })
     })
   }
@@ -68,18 +72,18 @@ class MongoDatabase {
     await this.ensureConnected(collectionName)
 
     const collection = await this.collection(collectionName)
-
+          console.log('Here is the user', data)
     let result = await new Promise((resolve, reject) => {
-      collection.create(data, (err, result) => {
+      collection.create(data.payload, (err: Error, result: CollectionDataType) => {
         if (err) {
           reject(err)
         }
 
-        resolve(result)
+        resolve(wrapResult(result, collectionName))
       })
     })
 
-    logger.info(`Inserted ${result.insertedCount} records into collection ${collectionName}`)
+    // logger.info(`Inserted ${result.insertedCount} records into collection ${collectionName}`)
     return result
   }
 
@@ -93,7 +97,7 @@ class MongoDatabase {
     const collection = this.collection(collectionName)
 
     let result = await new Promise((resolve, reject) => {
-      collection.update(query, {$set: data}, (err, result) => {
+      collection.update(query, {$set: data.payload}, (err: Error, result: any) => {
         if (err) {
           reject(err)
         }
@@ -111,7 +115,7 @@ class MongoDatabase {
 
     const collection = this.collection(collectionName)
     let result = await new Promise((resolve, reject) => {
-      collection.remove(query, (err, result) => {
+      collection.remove(query, (err: Error, result: any) => {
         if (err) {
           reject(err)
         }
@@ -124,7 +128,7 @@ class MongoDatabase {
     return result
   }
 
-  async count (query: any, collectionName: CollectionName) {
+  async count (query: any, collectionName: CollectionName): Promise<number> {
     await this.ensureConnected(collectionName)
 
     return this.collection(collectionName).find(query).count()
@@ -134,6 +138,8 @@ class MongoDatabase {
     switch (collectionName) {
       case 'User':
         return userModel
+
+      // TODO: aff Course collection and all the other collections here
 
       default:
         throw new Error('The collection with the given name does not exist.')
@@ -161,7 +167,7 @@ class MongoDatabase {
     }
     delete CONNECTION_POOL[this.url]
     logger.info(`Closed db connection ${this.url}`)
-    return thiss
+    return this
   }
 
   async dropCollection (collectionName: CollectionName) {
@@ -170,6 +176,32 @@ class MongoDatabase {
 
   async ensureConnected (tableName: string) {
     if (!this.db) await this.connect(tableName)
+  }
+}
+
+function wrapResult (
+  result: any,
+  collectionName: string
+): CollectionData {
+  switch (collectionName) {
+    case 'User':
+      return {
+        type: 'user',
+        payload: result
+      }
+
+    case 'Course':
+      return {
+        type: 'course',
+        payload: result
+      }
+
+    // default to user, perhaps a better default option is needed
+    default:
+      return {
+        type: 'user',
+        payload: result
+      }
   }
 }
 

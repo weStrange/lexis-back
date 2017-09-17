@@ -6,11 +6,14 @@ import logger from 'winston'
 import mongodb from 'mongodb'
 
 import MongoDatabase from './MongoDatabase'
+import Utils from '../utils'
 // import Model from './Model'
 import type {
   Gender,
   User as UserType,
-  CollectionData
+  CollectionData,
+  Credentials,
+  UserWithCreds
 } from '../types'
 
 let connectionString = process.env['MONGO_USER'] && process.env['MONGO_PASSWORD']
@@ -20,15 +23,6 @@ let connectionString = process.env['MONGO_USER'] && process.env['MONGO_PASSWORD'
 const db = new MongoDatabase(encodeURI(connectionString))
 console.log(process.env.MONGO_HOST)
 const collectionName = 'User'
-
-// TODO: create MongoModel class and extend it instead
-type UserData = {
-  email: string,
-  firstName: string,
-  lastName: string,
-  birthday?: string,
-  gender?: Gender
-}
 
 class User {
   _id: any;
@@ -72,7 +66,7 @@ class User {
     return query
   }
 
-  static async count (query: any) {
+  static async count (query: any): Promise<number> {
     query = User.transformQuery(query)
 
     return User.DB.count(query, User.COLLECTION)
@@ -84,8 +78,13 @@ class User {
 
     const results = await User.DB.select(query, User.COLLECTION)
 
-    let filtered = results
-      .filter((p) => p.type === 'user')
+    let filtered = []
+    results
+      .forEach((p) => {
+        if (p.type === 'user') {
+          filtered.push(Utils.stripCreds(p.payload))
+        }
+      })
 
     return filtered.map(data => new User(data))
   }
@@ -95,8 +94,13 @@ class User {
     // results = await results.next();
     if (!results) return []
 
-    let filtered = results
-      .filter((p) => p.type === 'user')
+    let filtered = []
+    results
+      .forEach((p) => {
+        if (p.type === 'user') {
+          filtered.push(Utils.stripCreds(p.payload))
+        }
+      })
 
     return filtered.map(data => new User(data))
   }
@@ -111,23 +115,54 @@ class User {
     return null
   }
 
+  static async findCreds (email: string): Promise<Credentials | null> {
+    let results = await User.DB.select({ email }, User.COLLECTION)
+    // results = await results.next();
+    if (
+      !results ||
+      results.length === 0 ||
+      results[0].type !== 'user'
+    ) {
+      return null
+    }
+
+    return {
+      email,
+      hash: results[0].payload.hash,
+      salt: results[0].payload.salt
+    }
+  }
+
   static async delete (query: any): Promise<number> {
     query = User.transformQuery(query)
     const result = await User.DB.delete(query, User.COLLECTION)
     return result.result.ok
   }
 
-  static async update (query: any, data: UserType): Promise<number> {
+  static async update (query: any, data: UserType, credentials: Credentials): Promise<number> {
     query = User.transformQuery(query)
-    const result = await User.DB.update(query, wrapData(data), User.COLLECTION)
+    const result = await User.DB.update(
+      query,
+      wrapData({ ...data, ...credentials }),
+      User.COLLECTION
+    )
 
     return result.ok
   }
 
-  static async insert (data: UserType): Promise<User> {
-    let result = await User.DB.insert(wrapData(data), User.COLLECTION)
+  static async insert (data: UserType, credentials: Credentials): Promise<User> {
+    let result = await User.DB.insert(wrapData({ ...data, ...credentials }), User.COLLECTION)
 
-    return new User(result)
+    let results = [result]
+    let filtered = []
+    results
+      .forEach((p) => {
+        if (p.type === 'user') {
+          filtered.push(Utils.stripCreds(p.payload))
+        }
+      })
+
+    return new User(filtered[0])
   }
 
   serialize (withId: boolean = true): UserType {
@@ -164,18 +199,8 @@ class User {
   */
 }
 
-function getHashAndSalt (
-  password: string
-): { salt: string, hash: string } {
-  let salt = crypto.randomBytes(16).toString('hex')
-  let hash = crypto.pbkdf2Sync(password, salt, 1000, 64)
-    .toString('hex')
-
-  return { salt, hash }
-}
-
 function wrapData (
-  data: UserType
+  data: UserWithCreds
 ): CollectionData {
   return {
     type: 'user',

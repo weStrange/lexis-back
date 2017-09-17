@@ -20,7 +20,7 @@ var userSchema = new mongoose.Schema({
     required: true
   },
   registrationDate: {
-    type: Date,
+    type: String,
     required: true
   },
   birthday: Date,

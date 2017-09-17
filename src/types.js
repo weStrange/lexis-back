@@ -20,7 +20,30 @@ export type Credentials = {
   salt: string
 }
 
+export type InputCreds = {
+  email: string,
+  password: string
+}
+
+export type UserWithCreds = {
+  email: string,
+  firstName: string,
+  lastName: string,
+  registrationDate: string,
+  birthday: string,
+  gender: string,
+  hash: string,
+  salt: string
+}
+
+// TODO: fill this in
+export type Course = {
+  id: number,
+  name: string
+}
+
+export type CollectionDataType = User | Course
 
 export type CollectionData
-= { type: 'user', payload: User }
-| { type: 'credentials', payload: Credentials }
+= { type: 'user', payload: UserWithCreds }
+| { type: 'course', payload: Course }
