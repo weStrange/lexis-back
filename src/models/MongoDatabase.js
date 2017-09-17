@@ -8,7 +8,11 @@ import readLine from 'readline'
 import Database from './Database'
 import userModel from './mongoose/UserModel'
 
-import type { CollectionName, CollectionData } from '../types'
+import type {
+  CollectionName,
+  CollectionData,
+  CollectionDataType
+} from '../types'
 
 const CONNECTION_POOL = {}
 
@@ -51,12 +55,12 @@ class MongoDatabase {
     const collection = this.collection(collectionName)
 
     return new Promise((resolve, reject) => {
-      collection.find(query, (err, result) => {
+      collection.find(query, (err, result: Array<CollectionDataType>) => {
         if (err) {
           reject(err)
         }
 
-        resolve(result.map((p) => ({ type: 'user', payload: p })))
+        resolve(result.map((p) => wrapResult(p, collectionName)))
       })
     })
   }
@@ -70,16 +74,16 @@ class MongoDatabase {
     const collection = await this.collection(collectionName)
 
     let result = await new Promise((resolve, reject) => {
-      collection.create(data, (err, result) => {
+      collection.create(data, (err, result: CollectionDataType) => {
         if (err) {
           reject(err)
         }
 
-        resolve(result)
+        resolve(wrapResult(result))
       })
     })
 
-    logger.info(`Inserted ${result.insertedCount} records into collection ${collectionName}`)
+    // logger.info(`Inserted ${result.insertedCount} records into collection ${collectionName}`)
     return result
   }
 
@@ -124,7 +128,7 @@ class MongoDatabase {
     return result
   }
 
-  async count (query: any, collectionName: CollectionName) {
+  async count (query: any, collectionName: CollectionName): Promise<number> {
     await this.ensureConnected(collectionName)
 
     return this.collection(collectionName).find(query).count()
@@ -161,7 +165,7 @@ class MongoDatabase {
     }
     delete CONNECTION_POOL[this.url]
     logger.info(`Closed db connection ${this.url}`)
-    return thiss
+    return this
   }
 
   async dropCollection (collectionName: CollectionName) {
@@ -170,6 +174,31 @@ class MongoDatabase {
 
   async ensureConnected (tableName: string) {
     if (!this.db) await this.connect(tableName)
+  }
+}
+
+function wrapResult (
+  result: any,
+  collectionName
+): CollectionData {
+  switch (collectionName) {
+    case 'User':
+      return {
+        type: 'user',
+        payload: result
+      }
+
+    case 'Credentials':
+      return {
+        type: 'credentials',
+        payload: result
+      }
+
+    default:
+      return {
+        type: 'user',
+        payload: result
+      }
   }
 }
 

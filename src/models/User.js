@@ -21,15 +21,6 @@ const db = new MongoDatabase(encodeURI(connectionString))
 console.log(process.env.MONGO_HOST)
 const collectionName = 'User'
 
-// TODO: create MongoModel class and extend it instead
-type UserData = {
-  email: string,
-  firstName: string,
-  lastName: string,
-  birthday?: string,
-  gender?: Gender
-}
-
 class User {
   _id: any;
   email: string;
@@ -72,7 +63,7 @@ class User {
     return query
   }
 
-  static async count (query: any) {
+  static async count (query: any): Promise<number> {
     query = User.transformQuery(query)
 
     return User.DB.count(query, User.COLLECTION)
@@ -84,10 +75,15 @@ class User {
 
     const results = await User.DB.select(query, User.COLLECTION)
 
-    let filtered = results
-      .filter((p) => p.type === 'user')
+    let filtered = []
+    results
+      .forEach((p) => {
+        if (p.type === 'user') {
+          filtered.push(p)
+        }
+      })
 
-    return filtered.map(data => new User(data))
+    return filtered.map(data => new User(data.payload))
   }
 
   static async find (query: any): Promise<Array<User>> {
@@ -95,10 +91,15 @@ class User {
     // results = await results.next();
     if (!results) return []
 
-    let filtered = results
-      .filter((p) => p.type === 'user')
+    let filtered = []
+    results
+      .forEach((p) => {
+        if (p.type === 'user') {
+          filtered.push(p)
+        }
+      })
 
-    return filtered.map(data => new User(data))
+    return filtered.map(data => new User(data.payload))
   }
 
   static async findOne (query: any): Promise<User | null> {
@@ -127,7 +128,16 @@ class User {
   static async insert (data: UserType): Promise<User> {
     let result = await User.DB.insert(wrapData(data), User.COLLECTION)
 
-    return new User(result)
+    let results = [result]
+    let filtered = []
+    results
+      .forEach((p) => {
+        if (p.type === 'user') {
+          filtered.push(p)
+        }
+      })
+
+    return new User(filtered[0].payload)
   }
 
   serialize (withId: boolean = true): UserType {

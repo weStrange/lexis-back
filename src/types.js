@@ -20,6 +20,7 @@ export type Credentials = {
   salt: string
 }
 
+export type CollectionDataType = User | Credentials
 
 export type CollectionData
 = { type: 'user', payload: User }
