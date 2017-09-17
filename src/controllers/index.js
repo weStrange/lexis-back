@@ -2,14 +2,12 @@
 /* @flow */
 'use strict'
 
-const path = require('path')
-const controllers = []
+import path from 'path'
 
-require('fs').readdirSync(__dirname).forEach(function (file) {
-  /* Ignore base files */
-  if (file.match(/(index|^Controller|^ApiController)(\.js)/)) return
-  /* Store module with its name (from filename) */
-  controllers[path.basename(file, '.js')] = require(path.join(__dirname, file))
-})
+import registrationApiController from './registrationApiController'
+import GraphqlApiController from './GraphqlApiController'
 
-module.exports = controllers
+export default {
+  GraphqlApiController,
+  registrationApiController
+}

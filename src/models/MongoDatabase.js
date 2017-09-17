@@ -56,7 +56,7 @@ class MongoDatabase {
           reject(err)
         }
 
-        resolve(result)
+        resolve(result.map((p) => ({ type: 'user', payload: p })))
       })
     })
   }
@@ -161,7 +161,7 @@ class MongoDatabase {
     }
     delete CONNECTION_POOL[this.url]
     logger.info(`Closed db connection ${this.url}`)
-    return this
+    return thiss
   }
 
   async dropCollection (collectionName: CollectionName) {

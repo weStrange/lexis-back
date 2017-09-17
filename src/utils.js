@@ -2,11 +2,11 @@
 /* @flow */
 'use strict'
 
-const config = require('./config')
-const logger = require('winston')
-const path = require('path')
+import config from './config'
+import logger from 'winston'
+import path from 'path'
 
-class Utils {
+export default class Utils {
   static requireFolder (folderPath: string, ignoreRegex: RegExp) {
     if (ignoreRegex && !(ignoreRegex instanceof RegExp)) {
       throw new Error(`$Argument ${ignoreRegex} was not a regular expression! Must be a regular expression that matches filenames to be ignored`)
@@ -29,5 +29,3 @@ class Utils {
     return modules
   }
 }
-
-module.exports = Utils

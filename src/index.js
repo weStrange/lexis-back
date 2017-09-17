@@ -1,30 +1,33 @@
 /* @flow */
 'use strict'
 
-const destroyable = require('server-destroy');
-const Koa = require('koa')
-const bodyParser = require('koa-body')
-const jwt = require('koa-jwt')
+import destroyable from 'server-destroy'
+import Koa from 'koa'
+import bodyParser from 'koa-body'
+import jwt from 'koa-jwt'
 
 require('dotenv').config()
 
-const passport = require('./auth/passport')
+import passport from './auth/passport'
 if (module.hot) {
+  // $FlowIgnore
   module.hot.accept('./auth/passport', () => {})
 }
 
 // const koaWebpack = require('koa-webpack');
 // const webpackConfig = require('./webpack.config');
 
-const logger = require('winston')
+import logger from 'winston'
 logger.remove(logger.transports.Console)
 logger.add(logger.transports.Console, { level: 'debug', colorize: true })
 
-const authenticate = require('./middleware/authenticate')()
-const responder = require('./middleware/responder')
+import configureAuth from './middleware/authenticate'
+let authenticate = configureAuth()
+import responder from './middleware/responder'
 // const netLogger = require('./middleware/logger');
-const config = require('./config')
-const routing = require('./middleware/routing')()
+import config from './config'
+import configureRouting from './middleware/routing'
+let routing = configureRouting()
 
 const app = new Koa()
 // app.proxy = true; // this is needed if running from behind a reverse proxy

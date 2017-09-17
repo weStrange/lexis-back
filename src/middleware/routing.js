@@ -1,11 +1,13 @@
 /* @flow */
 'use strict'
 
-const controllers = require('../controllers')
-const router = require('koa-router')()
-const logger = require('winston')
+import controllers from '../controllers'
+import koaRouter from 'koa-router'
+import logger from 'winston'
 
-module.exports = function route (options) {
+const router = koaRouter()
+
+export default function route () {
   // Remember - if you don't call await next(); then this middleware
 
   // logger.debug(`loading ${Object.keys(controllers).length} controllers...`)

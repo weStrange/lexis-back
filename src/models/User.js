@@ -7,7 +7,11 @@ import mongodb from 'mongodb'
 
 import MongoDatabase from './MongoDatabase'
 // import Model from './Model'
-import type { Gender, User as UserType } from '../types'
+import type {
+  Gender,
+  User as UserType,
+  CollectionData
+} from '../types'
 
 let connectionString = process.env['MONGO_USER'] && process.env['MONGO_PASSWORD']
 ? `mongodb://${process.env['MONGO_USER']}:${process.env['MONGO_PASSWORD']}@${process.env['MONGO_HOST'] || 'localhost'}/lexis`
@@ -80,7 +84,10 @@ class User {
 
     const results = await User.DB.select(query, User.COLLECTION)
 
-    return results.map(p => new User(p))
+    let filtered = results
+      .filter((p) => p.type === 'user')
+
+    return filtered.map(data => new User(data))
   }
 
   static async find (query: any): Promise<Array<User>> {
@@ -88,7 +95,10 @@ class User {
     // results = await results.next();
     if (!results) return []
 
-    return results.map(data => new User(data))
+    let filtered = results
+      .filter((p) => p.type === 'user')
+
+    return filtered.map(data => new User(data))
   }
 
   static async findOne (query: any): Promise<User | null> {
@@ -109,13 +119,14 @@ class User {
 
   static async update (query: any, data: UserType): Promise<number> {
     query = User.transformQuery(query)
-    const result = await User.DB.update(query, data, User.COLLECTION)
+    const result = await User.DB.update(query, wrapData(data), User.COLLECTION)
 
     return result.ok
   }
 
   static async insert (data: UserType): Promise<User> {
-    const result = await User.DB.insert(data, User.COLLECTION)
+    let result = await User.DB.insert(wrapData(data), User.COLLECTION)
+
     return new User(result)
   }
 
@@ -161,6 +172,15 @@ function getHashAndSalt (
     .toString('hex')
 
   return { salt, hash }
+}
+
+function wrapData (
+  data: UserType
+): CollectionData {
+  return {
+    type: 'user',
+    payload: data
+  }
 }
 
 module.exports = User
