@@ -1,43 +1,32 @@
 /* @flow */
 'use strict'
 
-const crypto = require('crypto')
-const passport = require('koa-passport')
+import passport from 'koa-passport'
 let LocalStrategy = require('passport-local').Strategy
 
-const User = require('../models/User')
+import User from '../models/User'
+import { validatePassword } from './oauth'
 
-passport.use(new LocalStrategy(async (email, password, done) => {
+export default passport.use(new LocalStrategy({usernameField: 'email'}, async (email, password, done) => {
   try {
-    let user = await User.findOne({ email })
-
-    if (user === undefined || user === null) {
+    console.log('in strategy', email, password)
+    let creds = await User.findCreds(email)
+    console.log('in strategy', creds)
+    if (creds === undefined || creds === null) {
       return done(null, false, {
         message: 'Incorrect username.'
       })
     }
 
     // console.log(user)
-    if (!validatePassword(password, user.hash, user.salt)) {
+    if (!validatePassword(password, creds.hash, creds.salt)) {
       return done(null, false, {
         message: 'Incorrect password.'
       })
     }
 
-    return done(null, user)
+    return done(null, creds)
   } catch (err) {
     return done(err)
   }
 }))
-
-function validatePassword (
-  password,
-  existingHash,
-  existingSalt
-) {
-  let hash = crypto.pbkdf2Sync(password, existingSalt, 1000, 64)
-
-  return existingHash === hash
-}
-
-module.exports = passport

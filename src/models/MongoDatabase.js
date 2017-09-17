@@ -55,7 +55,7 @@ class MongoDatabase {
     const collection = this.collection(collectionName)
 
     return new Promise((resolve, reject) => {
-      collection.find(query, (err, result: Array<CollectionDataType>) => {
+      collection.find(query, (err: Error, result: Array<CollectionDataType>) => {
         if (err) {
           reject(err)
         }
@@ -72,14 +72,14 @@ class MongoDatabase {
     await this.ensureConnected(collectionName)
 
     const collection = await this.collection(collectionName)
-
+          console.log('Here is the user', data)
     let result = await new Promise((resolve, reject) => {
-      collection.create(data, (err, result: CollectionDataType) => {
+      collection.create(data.payload, (err: Error, result: CollectionDataType) => {
         if (err) {
           reject(err)
         }
 
-        resolve(wrapResult(result))
+        resolve(wrapResult(result, collectionName))
       })
     })
 
@@ -97,7 +97,7 @@ class MongoDatabase {
     const collection = this.collection(collectionName)
 
     let result = await new Promise((resolve, reject) => {
-      collection.update(query, {$set: data}, (err, result) => {
+      collection.update(query, {$set: data.payload}, (err: Error, result: any) => {
         if (err) {
           reject(err)
         }
@@ -115,7 +115,7 @@ class MongoDatabase {
 
     const collection = this.collection(collectionName)
     let result = await new Promise((resolve, reject) => {
-      collection.remove(query, (err, result) => {
+      collection.remove(query, (err: Error, result: any) => {
         if (err) {
           reject(err)
         }
@@ -138,6 +138,8 @@ class MongoDatabase {
     switch (collectionName) {
       case 'User':
         return userModel
+
+      // TODO: aff Course collection and all the other collections here
 
       default:
         throw new Error('The collection with the given name does not exist.')
@@ -179,7 +181,7 @@ class MongoDatabase {
 
 function wrapResult (
   result: any,
-  collectionName
+  collectionName: string
 ): CollectionData {
   switch (collectionName) {
     case 'User':
@@ -188,12 +190,13 @@ function wrapResult (
         payload: result
       }
 
-    case 'Credentials':
+    case 'Course':
       return {
-        type: 'credentials',
+        type: 'course',
         payload: result
       }
 
+    // default to user, perhaps a better default option is needed
     default:
       return {
         type: 'user',
