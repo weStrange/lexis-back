@@ -1,5 +1,4 @@
 /* eslint-env jest */
-/* flow */
 'use strict'
 
 require('dotenv').config()

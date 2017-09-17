@@ -1,4 +1,4 @@
-/* flow */
+/* @flow */
 'use strict'
 
 const Database = require('./Database')
@@ -6,16 +6,18 @@ const Database = require('./Database')
 const mongoose = require('mongoose')
 const logger = require('winston')
 
-const userModel = require('./UserModel')
+const userModel = require('./mongoose/UserModel')
 
 const CONNECTION_POOL = {}
 
 class MongoDatabase extends Database {
-  constructor (url) {
+  db: any;
+
+  constructor (url: string) {
     super(url, mongoose)
   }
 
-  async select (query, collectionName) {
+  async select (query: any, collectionName: string) {
     await super.ensureConnected(collectionName)
 
     if (typeof query === 'string') query = {_id: query}
@@ -33,7 +35,7 @@ class MongoDatabase extends Database {
     })
   }
 
-  async insert (data, collectionName) {
+  async insert (data: any, collectionName: string) {
     await super.ensureConnected(collectionName)
 
     const collection = await this.collection(collectionName)
@@ -64,7 +66,7 @@ class MongoDatabase extends Database {
     return result
   }
 
-  async update (query, data, collectionName) {
+  async update (query: any, data: any, collectionName: string) {
     await super.ensureConnected(collectionName)
 
     const collection = this.collection(collectionName)
@@ -83,7 +85,7 @@ class MongoDatabase extends Database {
     return result
   }
 
-  async delete (query, collectionName) {
+  async delete (query: any, collectionName: string) {
     await super.ensureConnected(collectionName)
 
     const collection = this.collection(collectionName)
@@ -101,13 +103,13 @@ class MongoDatabase extends Database {
     return result
   }
 
-  async count (query, collectionName) {
+  async count (query: any, collectionName: string) {
     await super.ensureConnected(collectionName)
 
     return this.collection(collectionName).find(query).count()
   }
 
-  collection (collectionName) {
+  collection (collectionName: string) {
     switch (collectionName) {
       case 'User':
         return userModel
@@ -118,7 +120,7 @@ class MongoDatabase extends Database {
     // return this.db.collection(collectionName);
   }
 
-  async connect (collectionName) {
+  async connect (collectionName: string) {
     if (CONNECTION_POOL[this.url]) this.db = CONNECTION_POOL[this.url]
     else {
       mongoose.connect(this.url)
@@ -132,7 +134,7 @@ class MongoDatabase extends Database {
     return this
   }
 
-  async disconnect (callback = () => {}) {
+  async disconnect (callback: () => void = () => {}) {
     if (this.db) {
       await this.db.close(() => {
         console.log('Mongoose disconnected')
@@ -140,11 +142,11 @@ class MongoDatabase extends Database {
       })
     }
     delete CONNECTION_POOL[this.url]
-    logger.ingo(`Closed db connection ${this.url}`)
+    logger.info(`Closed db connection ${this.url}`)
     return this
   }
 
-  async dropCollection (collectionName) {
+  async dropCollection (collectionName: string) {
     mongoose.connection.db.dropCollection(collectionName)
   }
 }

@@ -1,5 +1,5 @@
 /* eslint { "global-require": 0 } */
-/* flow */
+/* @flow */
 'use strict'
 
 const config = require('./config')

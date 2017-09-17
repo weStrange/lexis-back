@@ -1,4 +1,4 @@
-/* flow */
+/* @flow */
 'use strict'
 
 // Abstract class defining how models should look like
