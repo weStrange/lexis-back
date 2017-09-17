@@ -1,8 +1,8 @@
 /* @flow */
 'use strict'
 
-const mongoose = require('mongoose')
-const crypto = require('crypto')
+import mongoose from 'mongoose'
+// const crypto = require('crypto')
 // const jwt = require('koa-jwt')
 
 var userSchema = new mongoose.Schema({
@@ -20,7 +20,7 @@ var userSchema = new mongoose.Schema({
     required: true
   },
   registrationDate: {
-    type: Date,
+    type: String,
     required: true
   },
   birthday: Date,
@@ -32,13 +32,13 @@ var userSchema = new mongoose.Schema({
   hash: String,
   salt: String
 })
-
+/*
 userSchema.methods.setPassword = function (password) {
   this.salt = crypto.randomBytes(16).toString('hex')
   this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64)
     .toString('hex')
 }
-/*
+
 userSchema.methods.validatePassport = function (password) {
   let hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64)
 
@@ -58,6 +58,4 @@ userSchema.methods.generateJwt = function () {
   }, process.env.JWT_SECRET)
 }
 */
-let UserModel = mongoose.model('User', userSchema)
-
-module.exports = UserModel
+export default mongoose.model('User', userSchema)

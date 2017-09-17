@@ -1,11 +1,13 @@
 [ignore]
-.*/node_modules/graphql/**
+*/node_modules/graphql/utilities/typeFromAST.*
 
 [include]
+.*/node_modules/graphql-tools/
 [libs]
 
 flow
 [options]
 
+suppress_type=$FlowFixMe
 suppress_type=$FlowIssue
 suppress_comment= \\(.\\|\n\\)*\\$FlowIgnore

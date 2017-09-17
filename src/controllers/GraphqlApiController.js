@@ -2,11 +2,11 @@
 /* @flow */
 'use strict'
 
-const configureApiController = require('./ApiController')
-const koaBody = require('koa-bodyparser')
+import configureApiController from './ApiController'
+import koaBody from 'koa-bodyparser'
 
-var { graphqlKoa, graphiqlKoa } = require('apollo-server-koa')
-var { makeExecutableSchema } = require('graphql-tools')
+import { graphqlKoa, graphiqlKoa } from 'apollo-server-koa'
+import { makeExecutableSchema } from 'graphql-tools'
 
 const UserModel = require('../models/User')
 
@@ -30,33 +30,16 @@ type Query {
   user(email: String!): User
 }
 
-input RegisterInput {
-  email: String!,
-  firstName: String!,
-  lastName: String!,
-  birthday: String,
-  gender: Gender
-}
-
-type Mutation {
-  register(input: RegisterInput!): User
-}
-
 schema {
-  query: Query,
-  mutation: Mutation
+  query: Query
 }`]
 
 var resolvers = {
   Query: {
     async user (root, args, ctx) {
-      let foundUser = (await UserModel.find({ email: args.email }))[0]
-      return new User(foundUser)
-    }
-  },
-  Mutation: {
-    async register (root, args, ctx) {
-      return (await UserModel.insert([{ ...args.input }]))[0]
+      let foundUser = await UserModel.findOne({ email: args.email })
+      // $FlowIgnore
+      return foundUser ? new User(foundUser) : null
     }
   }
 }
@@ -64,19 +47,17 @@ var resolvers = {
 const schema = makeExecutableSchema({typeDefs, resolvers})
 
 const customGraphqlMiddleware = function (
-  ctx,
-  next
+  ctx: any,
+  next: () => void
 ) {
   ctx.graphql()
   return next()
 }
 
-function configureUserApiController (router: any) {
+export default function configureUserApiController (router: any) {
   configureApiController(router)
 
   router.post('/graphql', koaBody(), customGraphqlMiddleware, graphqlKoa({ schema }))
   router.get('/graphql', graphqlKoa({ schema }))
   router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
 }
-
-module.exports = configureUserApiController

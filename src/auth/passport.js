@@ -1,42 +1,41 @@
 /* @flow */
 'use strict'
 
-const crypto = require('crypto')
-const passport = require('koa-passport')
-let LocalStrategy = require('passport-local').Strategy
+import passport from 'koa-passport'
+import dotenv from 'dotenv'
+import passportLocal from 'passport-local'
 
-const User = require('../models/User')
+import User from '../models/User'
+import { validatePassword } from './oauth'
 
-passport.use(new LocalStrategy(async (email, password, done) => {
-  try {
-    let user = await User.find({ email })[0]
+dotenv.config()
 
-    if (!user) {
-      return done(null, false, {
-        message: 'Incorrect username.'
-      })
-    }
-    // console.log(user)
-    if (!validatePassword(password, user.hash, user.salt)) {
-      return done(null, false, {
-        message: 'Incorrect password.'
-      })
-    }
+let LocalStrategy = passportLocal.Strategy
 
-    return done(null, user)
-  } catch (err) {
-    return done(err)
-  }
-}))
+export default passport.use(
+  new LocalStrategy(
+    {usernameField: 'email'},
+    async (email, password, done
+  ) => {
+      try {
+        console.log('in strategy', email, password)
+        let creds = await User.findCreds(email)
+        console.log('in strategy', creds)
+        if (creds === undefined || creds === null) {
+          return done(null, false, {
+            message: 'Incorrect username.'
+          })
+        }
 
-function validatePassword (
-  password,
-  existingHash,
-  existingSalt
-) {
-  let hash = crypto.pbkdf2Sync(password, existingSalt, 1000, 64)
+        // console.log(user)
+        if (!validatePassword(password, creds.hash, creds.salt)) {
+          return done(null, false, {
+            message: 'Incorrect password.'
+          })
+        }
 
-  return existingHash === hash
-}
-
-module.exports = passport
+        return done(null, creds)
+      } catch (err) {
+        return done(err)
+      }
+    }))

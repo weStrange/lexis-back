@@ -1,30 +1,37 @@
 /* @flow */
 'use strict'
 
-const destroyable = require('server-destroy');
-const Koa = require('koa')
-const bodyParser = require('koa-body')
-const jwt = require('koa-jwt')
+import destroyable from 'server-destroy'
+import Koa from 'koa'
+import bodyParser from 'koa-body'
+import jwt from 'koa-jwt'
+import logger from 'winston'
+import dotenv from 'dotenv'
 
-require('dotenv').config()
+import passport from './auth/passport'
+import configureAuth from './middleware/authenticate'
+import responder from './middleware/responder'
+import config from './config'
+import configureRouting from './middleware/routing'
 
-const passport = require('./auth/passport')
 if (module.hot) {
+  // $FlowIgnore
   module.hot.accept('./auth/passport', () => {})
 }
+
+dotenv.config()
 
 // const koaWebpack = require('koa-webpack');
 // const webpackConfig = require('./webpack.config');
 
-const logger = require('winston')
 logger.remove(logger.transports.Console)
 logger.add(logger.transports.Console, { level: 'debug', colorize: true })
 
-const authenticate = require('./middleware/authenticate')()
-const responder = require('./middleware/responder')
+let authenticate = configureAuth()
+
 // const netLogger = require('./middleware/logger');
-const config = require('./config')
-const routing = require('./middleware/routing')()
+
+let routing = configureRouting()
 
 const app = new Koa()
 // app.proxy = true; // this is needed if running from behind a reverse proxy
@@ -69,7 +76,7 @@ app.use(routing.allowedMethods())
 // remember that after controllers the logic will flow UP the stack so every middleware's code that comes
 // after the await next() will run too
 let server = app.listen(7000)
-destroyable(server);
+destroyable(server)
 
 process.on('uncaughtException', () => {
   server.destroy()

@@ -1,78 +1,107 @@
 /* @flow */
 'use strict'
 
-const Database = require('./Database')
-// const mongodb = require('mongodb');
-const mongoose = require('mongoose')
-const logger = require('winston')
+import mongoose from 'mongoose'
+import logger from 'winston'
+import readLine from 'readline'
+import dotenv from 'dotenv'
 
-const userModel = require('./mongoose/UserModel')
+import { List } from 'immutable'
+
+import userModel from './mongoose/UserModel'
+
+import type {
+  CollectionName,
+  CollectionData,
+  CollectionDataType
+} from '../types'
+
+dotenv.config()
 
 const CONNECTION_POOL = {}
 
-class MongoDatabase extends Database {
+class MongoDatabase {
   db: any;
+  url: string;
 
   constructor (url: string) {
-    super(url, mongoose)
+    this.url = url
+
+    if (process.platform === 'win32') {
+      const rl = readLine.createInterface({input: process.stdin, output: process.stdout})
+      rl.on('SIGINT', () => {
+        process.emit('SIGINT')
+      })
+    }
+
+    process.on(
+      'SIGINT',
+      () => this.disconnect(() => process.exit(0))
+    )
+    process.on(
+      'SIGTERM',
+      () => this.disconnect(() => process.exit(0))
+    )
+    process.once(
+      'SIGUSR2',
+      () => this.disconnect(() => process.kill(process.pid, 'SIGUSR2'))
+    )
   }
 
-  async select (query: any, collectionName: string) {
-    await super.ensureConnected(collectionName)
+  async select (
+    query: any,
+    collectionName: CollectionName
+  ): Promise<List<CollectionData>> {
+    await this.ensureConnected()
 
     if (typeof query === 'string') query = {_id: query}
 
     const collection = this.collection(collectionName)
 
     return new Promise((resolve, reject) => {
-      collection.find(query, (err, result) => {
+      collection.find(query, (err: Error, result: Array<CollectionDataType>) => {
         if (err) {
           reject(err)
         }
 
-        resolve(result)
+        resolve(List(result).map((p) => wrapResult(p, collectionName)))
       })
     })
   }
 
-  async insert (data: any, collectionName: string) {
-    await super.ensureConnected(collectionName)
+  async insert (
+    data: CollectionData,
+    collectionName: CollectionName
+  ): Promise<CollectionData> {
+    await this.ensureConnected()
 
     const collection = await this.collection(collectionName)
-    let result
-    if (data instanceof Array) {
-      result = await new Promise((resolve, reject) => {
-        collection.create(data, (err, results) => {
-          if (err) {
-            reject(err)
-          }
 
-          resolve(results)
-        })
+    let result = await new Promise((resolve, reject) => {
+      collection.create(data.payload, (err: Error, result: CollectionDataType) => {
+        if (err) {
+          reject(err)
+        }
+
+        resolve(wrapResult(result, collectionName))
       })
-    } else {
-      result = await new Promise((resolve, reject) => {
-        collection.create(data, (err, result) => {
-          if (err) {
-            reject(err)
-          }
+    })
 
-          resolve(result)
-        })
-      })
-    }
-
-    logger.info(`Inserted ${result.insertedCount} records into collection ${collectionName}`)
+    // logger.info(`Inserted ${result.insertedCount} records into collection ${collectionName}`)
     return result
   }
 
-  async update (query: any, data: any, collectionName: string) {
-    await super.ensureConnected(collectionName)
+  async update (
+    query: any,
+    data: CollectionData,
+    collectionName: CollectionName
+  ): Promise<any> {
+    await this.ensureConnected()
 
     const collection = this.collection(collectionName)
 
     let result = await new Promise((resolve, reject) => {
-      collection.update(query, {$set: data}, (err, result) => {
+      collection.update(query, {$set: data.payload}, (err: Error, result: any) => {
         if (err) {
           reject(err)
         }
@@ -85,12 +114,12 @@ class MongoDatabase extends Database {
     return result
   }
 
-  async delete (query: any, collectionName: string) {
-    await super.ensureConnected(collectionName)
+  async delete (query: any, collectionName: CollectionName): Promise<any> {
+    await this.ensureConnected()
 
     const collection = this.collection(collectionName)
     let result = await new Promise((resolve, reject) => {
-      collection.remove(query, (err, result) => {
+      collection.remove(query, (err: Error, result: any) => {
         if (err) {
           reject(err)
         }
@@ -103,16 +132,18 @@ class MongoDatabase extends Database {
     return result
   }
 
-  async count (query: any, collectionName: string) {
-    await super.ensureConnected(collectionName)
+  async count (query: any, collectionName: CollectionName): Promise<number> {
+    await this.ensureConnected()
 
     return this.collection(collectionName).find(query).count()
   }
 
-  collection (collectionName: string) {
+  collection (collectionName: CollectionName) {
     switch (collectionName) {
       case 'User':
         return userModel
+
+      // TODO: aff Course collection and all the other collections here
 
       default:
         throw new Error('The collection with the given name does not exist.')
@@ -120,17 +151,14 @@ class MongoDatabase extends Database {
     // return this.db.collection(collectionName);
   }
 
-  async connect (collectionName: string) {
+  async connect () {
     if (CONNECTION_POOL[this.url]) this.db = CONNECTION_POOL[this.url]
     else {
       mongoose.connect(this.url)
       CONNECTION_POOL[this.url] = this.db
       logger.info(`Opened database connection ${this.url}`)
     }
-    if (collectionName) {
-      // if collection doesn't exist, create it
-      // await this.db.createCollection(collectionName);
-    }
+
     return this
   }
 
@@ -146,8 +174,40 @@ class MongoDatabase extends Database {
     return this
   }
 
-  async dropCollection (collectionName: string) {
-    mongoose.connection.db.dropCollection(collectionName)
+  async dropCollection (collectionName: CollectionName) {
+    const collection = this.collection(collectionName)
+
+    collection.collection.drop()
+  }
+
+  async ensureConnected () {
+    if (!this.db) await this.connect()
+  }
+}
+
+function wrapResult (
+  result: any,
+  collectionName: string
+): CollectionData {
+  switch (collectionName) {
+    case 'User':
+      return {
+        type: 'user',
+        payload: result
+      }
+
+    case 'Course':
+      return {
+        type: 'course',
+        payload: result
+      }
+
+    // default to user, perhaps a better default option is needed
+    default:
+      return {
+        type: 'user',
+        payload: result
+      }
   }
 }
 
