@@ -1,9 +1,13 @@
 /* @flow */
 'use strict'
 
-const jwt = require('jsonwebtoken')
-const promisify = require('es6-promisify')
-const config = require('../config')
+import jwt from 'jsonwebtoken'
+import promisify from 'es6-promisify'
+import crypto from 'crypto'
+
+import config from '../config'
+
+import type { InputCreds } from '../types'
 
 // const redis = createClient()
 // const redisSetexAsync = promisify(redis.setex, redis)
@@ -18,12 +22,35 @@ const generateJwtId = async () => {
     return Promise.reject(e)
   }
 }
+
 */
-module.exports.generateTokens = async (
-  payload: any,
+export function validatePassword (
+  password: string,
+  existingHash: string,
+  existingSalt: string
+) {
+  let hash = crypto.pbkdf2Sync(password, existingSalt, 1000, 64, 'sha512')
+    .toString('hex')
+
+  return existingHash === hash
+}
+
+export function getHashAndSalt (
+  password: string
+): { salt: string, hash: string } {
+  let salt = crypto.randomBytes(16).toString('hex')
+  let hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512')
+    .toString('hex')
+
+  return { salt, hash }
+}
+
+
+export async function generateTokens (
+  payload: InputCreds,
   secret: string,
   opts: any = {}
-) => {
+) {
   try {
     const { auth } = config
 
@@ -44,7 +71,7 @@ module.exports.generateTokens = async (
     }, opts)
 
     // const refreshToken = await signAsync(refreshTokenPayload, secret, refreshTokenOpts)
-    const accessToken = await signAsync(payload, secret, accessTokenOpts)
+    const accessToken = await signAsync({ email: payload.email }, secret, accessTokenOpts)
 
     // await redisSetexAsync(refreshTokenId, auth.refreshTokenTtl, payload.user.username)
     // console.log('Here also')

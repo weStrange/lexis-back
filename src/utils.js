@@ -6,6 +6,11 @@ import config from './config'
 import logger from 'winston'
 import path from 'path'
 
+import type {
+  UserWithCreds,
+  User
+} from './types'
+
 export default class Utils {
   static requireFolder (folderPath: string, ignoreRegex: RegExp) {
     if (ignoreRegex && !(ignoreRegex instanceof RegExp)) {
@@ -27,5 +32,18 @@ export default class Utils {
       modules[path.basename(file, '.js')] = require(path.join(config.appRoot, folderPath, file))
     })
     return modules
+  }
+
+  static stripCreds (
+    fullUser: UserWithCreds
+  ): User {
+    return {
+      email: fullUser.email || '',
+      firstName: fullUser.firstName || '',
+      lastName: fullUser.lastName || '',
+      registrationDate: fullUser.registrationDate || '',
+      birthday: fullUser.birthday || '',
+      gender: fullUser.gender || ''
+    }
   }
 }

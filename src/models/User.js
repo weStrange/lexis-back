@@ -6,11 +6,14 @@ import logger from 'winston'
 import mongodb from 'mongodb'
 
 import MongoDatabase from './MongoDatabase'
+import Utils from '../utils'
 // import Model from './Model'
 import type {
   Gender,
   User as UserType,
-  CollectionData
+  CollectionData,
+  Credentials,
+  UserWithCreds
 } from '../types'
 
 let connectionString = process.env['MONGO_USER'] && process.env['MONGO_PASSWORD']
@@ -79,11 +82,11 @@ class User {
     results
       .forEach((p) => {
         if (p.type === 'user') {
-          filtered.push(p)
+          filtered.push(Utils.stripCreds(p.payload))
         }
       })
 
-    return filtered.map(data => new User(data.payload))
+    return filtered.map(data => new User(data))
   }
 
   static async find (query: any): Promise<Array<User>> {
@@ -95,11 +98,11 @@ class User {
     results
       .forEach((p) => {
         if (p.type === 'user') {
-          filtered.push(p)
+          filtered.push(Utils.stripCreds(p.payload))
         }
       })
 
-    return filtered.map(data => new User(data.payload))
+    return filtered.map(data => new User(data))
   }
 
   static async findOne (query: any): Promise<User | null> {
@@ -112,32 +115,54 @@ class User {
     return null
   }
 
+  static async findCreds (email: string): Promise<Credentials | null> {
+    let results = await User.DB.select({ email }, User.COLLECTION)
+    // results = await results.next();
+    if (
+      !results ||
+      results.length === 0 ||
+      results[0].type !== 'user'
+    ) {
+      return null
+    }
+
+    return {
+      email,
+      hash: results[0].payload.hash,
+      salt: results[0].payload.salt
+    }
+  }
+
   static async delete (query: any): Promise<number> {
     query = User.transformQuery(query)
     const result = await User.DB.delete(query, User.COLLECTION)
     return result.result.ok
   }
 
-  static async update (query: any, data: UserType): Promise<number> {
+  static async update (query: any, data: UserType, credentials: Credentials): Promise<number> {
     query = User.transformQuery(query)
-    const result = await User.DB.update(query, wrapData(data), User.COLLECTION)
+    const result = await User.DB.update(
+      query,
+      wrapData({ ...data, ...credentials }),
+      User.COLLECTION
+    )
 
     return result.ok
   }
 
-  static async insert (data: UserType): Promise<User> {
-    let result = await User.DB.insert(wrapData(data), User.COLLECTION)
+  static async insert (data: UserType, credentials: Credentials): Promise<User> {
+    let result = await User.DB.insert(wrapData({ ...data, ...credentials }), User.COLLECTION)
 
     let results = [result]
     let filtered = []
     results
       .forEach((p) => {
         if (p.type === 'user') {
-          filtered.push(p)
+          filtered.push(Utils.stripCreds(p.payload))
         }
       })
 
-    return new User(filtered[0].payload)
+    return new User(filtered[0])
   }
 
   serialize (withId: boolean = true): UserType {
@@ -174,18 +199,8 @@ class User {
   */
 }
 
-function getHashAndSalt (
-  password: string
-): { salt: string, hash: string } {
-  let salt = crypto.randomBytes(16).toString('hex')
-  let hash = crypto.pbkdf2Sync(password, salt, 1000, 64)
-    .toString('hex')
-
-  return { salt, hash }
-}
-
 function wrapData (
-  data: UserType
+  data: UserWithCreds
 ): CollectionData {
   return {
     type: 'user',
