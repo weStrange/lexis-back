@@ -74,11 +74,6 @@ class Database {
   async commitTransaction () {
     throw new Error('Database.commitTransaction is abstract and must be implemented by subclasses')
   }
-
-  // get database instance
-  getDb () {
-    return this.db
-  }
 }
 
 module.exports = Database

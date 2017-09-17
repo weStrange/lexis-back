@@ -8,10 +8,12 @@ let { generateTokens } = require('../auth/oauth')
 let User = require('../models/User')
 
 if (module.hot) {
+  // $FlowIgnore
   module.hot.accept('../auth/oauth', () => {})
 }
 
 if (module.hot) {
+  // $FlowIgnore
   module.hot.accept('../auth/passport', () => {})
 }
 
@@ -25,7 +27,10 @@ function localAuthHandler (ctx: any, next: () => void) {
       ctx.status = 401
       ctx.body = info.message
     } else {
-      const { accessToken } = await generateTokens({user}, process.env['SESSION_SECRET'])
+      const { accessToken } = await generateTokens(
+        {user},
+        process.env['SESSION_SECRET'] || 'secret'
+      )
       try {
         ctx.json({
           accessToken
@@ -42,7 +47,7 @@ async function registrationHandler (ctx, next) {
   let { email } = ctx.request.body
 
   if (!(await User.findOne(email))) {
-    let result = await User.insertOne(ctx.request.body)
+    let result = await User.insert(ctx.request.body)
 
     ctx.body = result.serialize(false)
   }
