@@ -5,6 +5,8 @@ import crypto from 'crypto'
 import logger from 'winston'
 import mongodb from 'mongodb'
 
+import { List } from 'immutable'
+
 import MongoDatabase from './MongoDatabase'
 import Utils from '../utils'
 // import Model from './Model'
@@ -21,7 +23,7 @@ let connectionString = process.env['MONGO_USER'] && process.env['MONGO_PASSWORD'
 : `mongodb://${process.env['MONGO_HOST'] || 'localhost'}/lexis`
 
 const db = new MongoDatabase(encodeURI(connectionString))
-console.log(process.env.MONGO_HOST)
+
 const collectionName = 'User'
 
 class User {
@@ -72,33 +74,33 @@ class User {
     return User.DB.count(query, User.COLLECTION)
   }
 
-  static async where (query: any): Promise<Array<User>> {
+  static async where (query: any): Promise<List<User>> {
     // transform query for this model
     query = User.transformQuery(query)
 
     const results = await User.DB.select(query, User.COLLECTION)
 
-    let filtered = []
+    let filtered = List()
     results
       .forEach((p) => {
         if (p.type === 'user') {
-          filtered.push(Utils.stripCreds(p.payload))
+          filtered = filtered.push(Utils.stripCreds(p.payload))
         }
       })
 
     return filtered.map(data => new User(data))
   }
 
-  static async find (query: any): Promise<Array<User>> {
+  static async find (query: any): Promise<List<User>> {
     let results = await User.DB.select(query, User.COLLECTION)
     // results = await results.next();
-    if (!results) return []
+    if (!results) return List()
 
-    let filtered = []
+    let filtered = List()
     results
       .forEach((p) => {
         if (p.type === 'user') {
-          filtered.push(Utils.stripCreds(p.payload))
+          filtered = filtered.push(Utils.stripCreds(p.payload))
         }
       })
 
@@ -106,7 +108,7 @@ class User {
   }
 
   static async findOne (query: any): Promise<User | null> {
-    let result = (await this.find(query))[0]
+    let result = (await this.find(query)).first()
 
     if (result) {
       return result
@@ -117,19 +119,20 @@ class User {
 
   static async findCreds (email: string): Promise<Credentials | null> {
     let results = await User.DB.select({ email }, User.COLLECTION)
+    let firstResult = results.first()
     // results = await results.next();
     if (
       !results ||
-      results.length === 0 ||
-      results[0].type !== 'user'
+      results.size === 0 ||
+      firstResult.type !== 'user'
     ) {
       return null
     }
 
     return {
       email,
-      hash: results[0].payload.hash,
-      salt: results[0].payload.salt
+      hash: firstResult.payload.hash,
+      salt: firstResult.payload.salt
     }
   }
 
@@ -153,16 +156,16 @@ class User {
   static async insert (data: UserType, credentials: Credentials): Promise<User> {
     let result = await User.DB.insert(wrapData({ ...data, ...credentials }), User.COLLECTION)
 
-    let results = [result]
-    let filtered = []
+    let results = List.of(result)
+    let filtered = List()
     results
       .forEach((p) => {
         if (p.type === 'user') {
-          filtered.push(Utils.stripCreds(p.payload))
+          filtered = filtered.push(Utils.stripCreds(p.payload))
         }
       })
 
-    return new User(filtered[0])
+    return new User(filtered.first())
   }
 
   serialize (withId: boolean = true): UserType {

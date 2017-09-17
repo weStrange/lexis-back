@@ -5,7 +5,8 @@ import mongoose from 'mongoose'
 import logger from 'winston'
 import readLine from 'readline'
 
-import Database from './Database'
+import { List } from 'immutable'
+
 import userModel from './mongoose/UserModel'
 
 import type {
@@ -47,7 +48,7 @@ class MongoDatabase {
   async select (
     query: any,
     collectionName: CollectionName
-  ): Promise<Array<CollectionData>> {
+  ): Promise<List<CollectionData>> {
     await this.ensureConnected(collectionName)
 
     if (typeof query === 'string') query = {_id: query}
@@ -60,7 +61,7 @@ class MongoDatabase {
           reject(err)
         }
 
-        resolve(result.map((p) => wrapResult(p, collectionName)))
+        resolve(List(result).map((p) => wrapResult(p, collectionName)))
       })
     })
   }

@@ -1,5 +1,8 @@
 [ignore]
-.*/node_modules/graphql/**
+.*/node_modules/graphql/execution/**
+.*/node_modules/graphql/subscription/**
+.*/node_modules/graphql/ustilities/**
+.*/node_modules/graphql/graphql.js.flow
 
 [include]
 [libs]

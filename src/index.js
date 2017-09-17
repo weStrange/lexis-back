@@ -72,7 +72,7 @@ app.use(routing.allowedMethods())
 // remember that after controllers the logic will flow UP the stack so every middleware's code that comes
 // after the await next() will run too
 let server = app.listen(7000)
-destroyable(server);
+destroyable(server)
 
 process.on('uncaughtException', () => {
   server.destroy()

@@ -37,9 +37,9 @@ schema {
 var resolvers = {
   Query: {
     async user (root, args, ctx) {
-      let foundUser = (await UserModel.find({ email: args.email }))[0]
+      let foundUser = await UserModel.findOne({ email: args.email })
       // $FlowIgnore
-      return new User(foundUser)
+      return foundUser ? new User(foundUser) : null
     }
   }
 }
@@ -47,8 +47,8 @@ var resolvers = {
 const schema = makeExecutableSchema({typeDefs, resolvers})
 
 const customGraphqlMiddleware = function (
-  ctx,
-  next
+  ctx: any,
+  next: () => void
 ) {
   ctx.graphql()
   return next()

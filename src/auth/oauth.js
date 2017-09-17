@@ -45,7 +45,6 @@ export function getHashAndSalt (
   return { salt, hash }
 }
 
-
 export async function generateTokens (
   payload: InputCreds,
   secret: string,

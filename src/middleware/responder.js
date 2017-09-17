@@ -1,7 +1,7 @@
 /* @flow */
 'use strict'
 
-const logger = require('winston')
+import logger from 'winston'
 
 const RESPONSE_DEFAULT_TYPE = 'RT_DEFAULT'
 const RESPONSE_TYPE_HTML = 'RT_HTML'
@@ -100,7 +100,7 @@ type ResponderOptions = {
   app: any
 }
 
-module.exports = function responder (options: ResponderOptions) {
+export default function responder (options: ResponderOptions) {
   const appRoot = options.appRoot
   if (!appRoot) throw new Error(`Please provide appRoot to the responder!`)
   const app = options.app

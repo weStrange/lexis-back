@@ -3,9 +3,9 @@
 
 require('dotenv').config()
 
-const Utils = require('../utils')
+// const Utils = require('../utils')
 const expect = require('chai').expect
-const models = Utils.requireFolder('models', /(Database|^Model)(\.js)/)
+const models = []// Utils.requireFolder('models', /(Database|^Model)(\.js)/)
 const logger = require('winston')
 
 describe('User model:', async function () {
