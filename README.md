@@ -13,9 +13,9 @@ redis-server
 ```
 If it is not yet install on your machine, isntall it by executing
 ```
-npm install redis -g
+sudo apt-get install redis-server
 ```
 5. run `yarn run devserver` to start the local development server
 **NOTES**: If you do not have yarn, you can install it by `npm install -g yarn` (Yarn is better than NPM)
 ## Common scripts
-* `yarn test`: start running test. Linter is run before test, so any lint-error must be cleared before you can start testing. Flow type checking is also run before the tests but after the linter check.
+* `yarn test`: start running test. Linter is run before test, so any lint-error must be cleared before you can start testing.

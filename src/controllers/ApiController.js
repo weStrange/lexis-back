@@ -1,9 +1,9 @@
-/* flow */
+/* @flow */
 'use strict'
 
 const configureController = require('./Controller')
 
-function configureApiController (router) {
+function configureApiController (router: any) {
   configureController(router)
 }
 

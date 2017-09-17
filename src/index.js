@@ -1,13 +1,14 @@
-/* flow */
+/* @flow */
 'use strict'
 
+const destroyable = require('server-destroy');
 const Koa = require('koa')
 const bodyParser = require('koa-body')
 const jwt = require('koa-jwt')
-const passport = require('./auth/passport')
 
 require('dotenv').config()
 
+const passport = require('./auth/passport')
 if (module.hot) {
   module.hot.accept('./auth/passport', () => {})
 }
@@ -53,8 +54,6 @@ app.use(authenticate.routes())
 app.use(authenticate.allowedMethods())
 
 // app.use(passport.session())
-// TODO: uncomment and configure properly
-
 app.use(
   jwt({secret: process.env['SESSION_SECRET'], debug: true})
     // .unless({path: [/^((?!\/api[\/$\s]).)+$/g]})
@@ -69,6 +68,19 @@ app.use(routing.allowedMethods())
 // if you want to have some middleware running AFTER some controllers (controller will have to call await next)
 // remember that after controllers the logic will flow UP the stack so every middleware's code that comes
 // after the await next() will run too
-app.listen(7000)
+let server = app.listen(7000)
+destroyable(server);
 
+process.on('uncaughtException', () => {
+  server.destroy()
+})
+
+process.on('SIGTERM', () => {
+  server.destroy()
+})
+/*
+process.on('SIGKILL', () => {
+  server.destroy()
+})
+*/
 logger.info('Application running on port 7000')

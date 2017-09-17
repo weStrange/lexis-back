@@ -1,4 +1,4 @@
-/* flow */
+/* @flow */
 'use strict'
 
 const logger = require('winston')
@@ -15,11 +15,19 @@ const RESPONSE_TYPE_GRAPHQL = 'RT_GRAPHQL'
 
 // Renders responses using settings provided
 class Renderer {
-  constructor (data, type, view) {
-    this.data = data || {}
-    this.type = type || RESPONSE_DEFAULT_TYPE
+  data: any;
+  type: string;
+  view: any;
+
+  static APP_ROOT: string;
+
+  constructor (data: any = {}, type: string = RESPONSE_DEFAULT_TYPE, view: any = null) {
+    this.data = data
+    this.type = type
     // this.view = view || 'views/notfound.pug';
-    if (!Renderer.APP_ROOT) Renderer.APP_ROOT = '../'
+    if (!Renderer.APP_ROOT) {
+      Renderer.APP_ROOT = '../'
+    }
 /*
     if(!Renderer.PUG_CONFIG){
       Renderer.PUG_CONFIG = {
@@ -30,7 +38,7 @@ class Renderer {
 */
   }
 
-  render (ctx) {
+  render (ctx: any) {
     if (ctx.renderd === true) {
       logger.warn(`ctx.rendered flag is set to true, renderer will skip`)
       return ctx
@@ -72,7 +80,7 @@ class Renderer {
     return ctx
   }
 
-  static setAppRoot (appRoot) {
+  static setAppRoot (appRoot: string) {
     Renderer.APP_ROOT = appRoot
   }
 
@@ -87,8 +95,13 @@ class Renderer {
   }
 }
 
-module.exports = function responder (options) {
-  const appRoot = options.appRoot || options
+type ResponderOptions = {
+  appRoot: string,
+  app: any
+}
+
+module.exports = function responder (options: ResponderOptions) {
+  const appRoot = options.appRoot
   if (!appRoot) throw new Error(`Please provide appRoot to the responder!`)
   const app = options.app
   if (!app) throw new Error(`Please give the app reference so we can bootstrap helper methods!`)
@@ -123,7 +136,7 @@ module.exports = function responder (options) {
 
   app.context.log = logger
 
-  return async function responder (ctx, next) {
+  return async function responder (ctx: any, next: () => void) {
     try {
       ctx.renderer = new Renderer()
       // aaaand we are off

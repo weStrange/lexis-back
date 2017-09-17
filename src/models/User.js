@@ -1,9 +1,10 @@
-/* flow */
+/* @flow */
 'use strict'
 
 const MongoDatabase = require('./MongoDatabase')
 const Model = require('./Model')
 // const Comment = require('./Comment');
+const crypto = require('crypto')
 const logger = require('winston')
 const mongodb = require('mongodb')
 
@@ -11,7 +12,7 @@ let connectionString = process.env['MONGO_USER'] && process.env['MONGO_PASSWORD'
 ? `mongodb://${process.env['MONGO_USER']}:${process.env['MONGO_PASSWORD']}@${process.env['MONGO_HOST']}/lexis`
 : `mongodb://${process.env['MONGO_HOST']}/lexis`
 const db = new MongoDatabase(encodeURI(connectionString))
-
+console.log(process.env.MONGO_HOST)
 const collectionName = 'User'
 
 // TODO: create MongoModel class and extend it instead
@@ -71,6 +72,10 @@ class User extends Model {
     return results.map(data => new User(data))
   }
 
+  static async findOne (query) {
+    return (await this.find(query))[0]
+  }
+
   static async delete (query) {
     query = User.transformQuery(query)
     const result = await User.DB.delete(query, User.COLLECTION)
@@ -85,12 +90,17 @@ class User extends Model {
   }
 
   static async insert (data) {
+    getHashAndSalt()
     data = data.map(ud => new User(ud).serialize(true))
     const result = await User.DB.insert(data, User.COLLECTION)
     return result.map(data => new User(data))
   }
 
-  serialize (withId) {
+  static async insertOne (data) {
+    return this.insert([data])
+  }
+
+  serialize (withId = true) {
     const data = super.serialize()
 
     // this is essentially the reverse if your constructor
@@ -101,17 +111,23 @@ class User extends Model {
         case 'id':
           if (withId) data._id = value
           break
-        case 'username':
-          data.username = value
+/*
+        case 'email':
+          data.email = value
           break
-        case 'avatar':
-          data.avatar = value
+        case 'firstName':
+          data.firstName = value
           break
-        case 'comments':
-          // handle associations as appropriate for this model
-          // in this case we don't need to do anything as we assume comments
-          // are saved explicitly and separately
+        case 'lastName':
+          data.lastName = value
           break
+        case 'registrationDate':
+          data.registrationDate = value
+          break
+        case 'gender':
+          data.gender = value
+          break
+*/
         default:
           switch (typeof value) {
             // for any 'unknown' attributes serialize them if they are one of the
@@ -170,4 +186,13 @@ class User extends Model {
     return this
   }
 }
+
+function getHashAndSalt (password) {
+  let salt = crypto.randomBytes(16).toString('hex')
+  let hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64)
+    .toString('hex')
+
+  return { salt, hash }
+}
+
 module.exports = User

@@ -1,4 +1,4 @@
-/* flow */
+/* @flow */
 'use strict'
 
 class Association extends Array {

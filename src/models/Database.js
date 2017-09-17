@@ -1,10 +1,14 @@
-/* flow */
+/* @flow */
 'use strict'
 
 const readLine = require('readline')
 
 class Database {
-  constructor (url, driver) {
+  url: string;
+  driver: any;
+
+  constructor (url: string, driver: any) {
+    // console.log(url)
     this.url = url
     this.driver = driver
 
@@ -29,31 +33,31 @@ class Database {
     )
   }
 
-  async ensureConnected (tableName) {
+  async ensureConnected (tableName: string) {
     if (!this.db) await this.connect(tableName)
   }
 
   // return some kind of result set from the query object passed
-  async select (query) {
+  async select (query: any) {
     throw new Error('Database.select is abstract and must be implemented by subclasses')
   }
 
   // insert records using the query and return something
-  async insert (query) {
+  async insert (query: any) {
     throw new Error('Database.insert is abstract and must be implemented by subclasses')
   }
 
   // update records using the query and return something
-  async update (query) {
+  async update (query: any) {
     throw new Error('Database.update is abstract and must be implemented by subclasses')
   }
 
   // delete records using the query and return something
-  async delete (args) {
+  async delete (args: any) {
     throw new Error('Database.delete is abstract and must be implemented by subclasses')
   }
 
-  async count (args) {
+  async count (args: any) {
     throw new Error('Database.count is abstract and must be implemented by subclasses')
   }
 
