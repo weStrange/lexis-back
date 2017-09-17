@@ -9,13 +9,14 @@ const User = require('../models/User')
 
 passport.use(new LocalStrategy(async (email, password, done) => {
   try {
-    let user = await User.find({ email })[0]
+    let user = await User.findOne({ email })
 
-    if (!user) {
+    if (user === undefined || user === null) {
       return done(null, false, {
         message: 'Incorrect username.'
       })
     }
+
     // console.log(user)
     if (!validatePassword(password, user.hash, user.salt)) {
       return done(null, false, {

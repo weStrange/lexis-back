@@ -33,10 +33,6 @@ class Database {
     )
   }
 
-  async ensureConnected (tableName: string) {
-    if (!this.db) await this.connect(tableName)
-  }
-
   // return some kind of result set from the query object passed
   async select (query: any) {
     throw new Error('Database.select is abstract and must be implemented by subclasses')
@@ -77,11 +73,6 @@ class Database {
 
   async commitTransaction () {
     throw new Error('Database.commitTransaction is abstract and must be implemented by subclasses')
-  }
-
-  // get database instance
-  getDb () {
-    return this.db
   }
 }
 

@@ -1,73 +1,98 @@
 /* @flow */
 'use strict'
 
-const Database = require('./Database')
-// const mongodb = require('mongodb');
-const mongoose = require('mongoose')
-const logger = require('winston')
+import mongoose from 'mongoose'
+import logger from 'winston'
+import readLine from 'readline'
 
-const userModel = require('./mongoose/UserModel')
+import Database from './Database'
+import userModel from './mongoose/UserModel'
+
+import type {
+  CollectionName,
+  CollectionData,
+  CollectionDataType
+} from '../types'
 
 const CONNECTION_POOL = {}
 
-class MongoDatabase extends Database {
+class MongoDatabase {
   db: any;
+  url: string;
 
   constructor (url: string) {
-    super(url, mongoose)
+    this.url = url
+
+    if (process.platform === 'win32') {
+      const rl = readLine.createInterface({input: process.stdin, output: process.stdout})
+      rl.on('SIGINT', () => {
+        process.emit('SIGINT')
+      })
+    }
+
+    process.on(
+      'SIGINT',
+      () => this.disconnect(() => process.exit(0))
+    )
+    process.on(
+      'SIGTERM',
+      () => this.disconnect(() => process.exit(0))
+    )
+    process.once(
+      'SIGUSR2',
+      () => this.disconnect(() => process.kill(process.pid, 'SIGUSR2'))
+    )
   }
 
-  async select (query: any, collectionName: string) {
-    await super.ensureConnected(collectionName)
+  async select (
+    query: any,
+    collectionName: CollectionName
+  ): Promise<Array<CollectionData>> {
+    await this.ensureConnected(collectionName)
 
     if (typeof query === 'string') query = {_id: query}
 
     const collection = this.collection(collectionName)
 
     return new Promise((resolve, reject) => {
-      collection.find(query, (err, result) => {
+      collection.find(query, (err, result: Array<CollectionDataType>) => {
         if (err) {
           reject(err)
         }
 
-        resolve(result)
+        resolve(result.map((p) => wrapResult(p, collectionName)))
       })
     })
   }
 
-  async insert (data: any, collectionName: string) {
-    await super.ensureConnected(collectionName)
+  async insert (
+    data: CollectionData,
+    collectionName: CollectionName
+  ): Promise<CollectionData> {
+    await this.ensureConnected(collectionName)
 
     const collection = await this.collection(collectionName)
-    let result
-    if (data instanceof Array) {
-      result = await new Promise((resolve, reject) => {
-        collection.create(data, (err, results) => {
-          if (err) {
-            reject(err)
-          }
 
-          resolve(results)
-        })
+    let result = await new Promise((resolve, reject) => {
+      collection.create(data, (err, result: CollectionDataType) => {
+        if (err) {
+          reject(err)
+        }
+
+        resolve(wrapResult(result))
       })
-    } else {
-      result = await new Promise((resolve, reject) => {
-        collection.create(data, (err, result) => {
-          if (err) {
-            reject(err)
-          }
+    })
 
-          resolve(result)
-        })
-      })
-    }
-
-    logger.info(`Inserted ${result.insertedCount} records into collection ${collectionName}`)
+    // logger.info(`Inserted ${result.insertedCount} records into collection ${collectionName}`)
     return result
   }
 
-  async update (query: any, data: any, collectionName: string) {
-    await super.ensureConnected(collectionName)
+  async update (
+    query: any,
+    data: CollectionData,
+    collectionName: CollectionName
+  ): Promise<any> {
+    await this.ensureConnected(collectionName)
 
     const collection = this.collection(collectionName)
 
@@ -85,8 +110,8 @@ class MongoDatabase extends Database {
     return result
   }
 
-  async delete (query: any, collectionName: string) {
-    await super.ensureConnected(collectionName)
+  async delete (query: any, collectionName: CollectionName): Promise<any> {
+    await this.ensureConnected(collectionName)
 
     const collection = this.collection(collectionName)
     let result = await new Promise((resolve, reject) => {
@@ -103,13 +128,13 @@ class MongoDatabase extends Database {
     return result
   }
 
-  async count (query: any, collectionName: string) {
-    await super.ensureConnected(collectionName)
+  async count (query: any, collectionName: CollectionName): Promise<number> {
+    await this.ensureConnected(collectionName)
 
     return this.collection(collectionName).find(query).count()
   }
 
-  collection (collectionName: string) {
+  collection (collectionName: CollectionName) {
     switch (collectionName) {
       case 'User':
         return userModel
@@ -120,17 +145,14 @@ class MongoDatabase extends Database {
     // return this.db.collection(collectionName);
   }
 
-  async connect (collectionName: string) {
+  async connect () {
     if (CONNECTION_POOL[this.url]) this.db = CONNECTION_POOL[this.url]
     else {
       mongoose.connect(this.url)
       CONNECTION_POOL[this.url] = this.db
       logger.info(`Opened database connection ${this.url}`)
     }
-    if (collectionName) {
-      // if collection doesn't exist, create it
-      // await this.db.createCollection(collectionName);
-    }
+
     return this
   }
 
@@ -146,8 +168,37 @@ class MongoDatabase extends Database {
     return this
   }
 
-  async dropCollection (collectionName: string) {
+  async dropCollection (collectionName: CollectionName) {
     mongoose.connection.db.dropCollection(collectionName)
+  }
+
+  async ensureConnected (tableName: string) {
+    if (!this.db) await this.connect(tableName)
+  }
+}
+
+function wrapResult (
+  result: any,
+  collectionName
+): CollectionData {
+  switch (collectionName) {
+    case 'User':
+      return {
+        type: 'user',
+        payload: result
+      }
+
+    case 'Credentials':
+      return {
+        type: 'credentials',
+        payload: result
+      }
+
+    default:
+      return {
+        type: 'user',
+        payload: result
+      }
   }
 }
 
