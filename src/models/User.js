@@ -5,7 +5,7 @@ import mongodb from 'mongodb'
 
 import { List } from 'immutable'
 
-import MongoDatabase from './MongoDatabase'
+import { getDbInstance } from './MongoDatabase'
 import Utils from '../utils'
 // import Model from './Model'
 import type {
@@ -14,12 +14,6 @@ import type {
   Credentials,
   UserWithCreds
 } from '../types'
-
-let connectionString = process.env['MONGO_USER'] && process.env['MONGO_PASSWORD']
-? `mongodb://${process.env['MONGO_USER']}:${process.env['MONGO_PASSWORD']}@${process.env['MONGO_HOST'] || 'localhost'}/lexis`
-: `mongodb://${process.env['MONGO_HOST'] || 'localhost'}/lexis`
-
-const db = new MongoDatabase(encodeURI(connectionString))
 
 const collectionName = 'User'
 
@@ -46,7 +40,7 @@ class User {
   // allow access to the raw mongodb driver's database instance, if it exists (ensureConnected called at least once)
   // this is like a getter for private static variable in Java
   static getDb (): any {
-    return db
+    return getDbInstance()
   }
 
   // collection name of the model
