@@ -29,7 +29,6 @@ let authRoutes = getRouter()
 
 function localAuthHandler (ctx: any, next: () => void) {
   return passport.authenticate('local', async (err, user: InputCreds, info) => {
-    console.log('in authenticate', user, info)
     if (err) {
       ctx.throw(500, err)
     }

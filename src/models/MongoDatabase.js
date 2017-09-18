@@ -20,6 +20,10 @@ dotenv.config()
 
 const CONNECTION_POOL = {}
 
+let connectionString = process.env['MONGO_USER'] && process.env['MONGO_PASSWORD']
+? `mongodb://${process.env['MONGO_USER']}:${process.env['MONGO_PASSWORD']}@${process.env['MONGO_HOST'] || 'localhost'}/lexis`
+: `mongodb://${process.env['MONGO_HOST'] || 'localhost'}/lexis`
+
 class MongoDatabase {
   db: any;
   url: string;
@@ -184,6 +188,12 @@ class MongoDatabase {
     if (!this.db) await this.connect()
   }
 }
+// create MongoDB instance only one time and keep reference to it
+const db = new MongoDatabase(encodeURI(connectionString))
+
+export function getDbInstance (): MongoDatabase {
+  return db
+}
 
 function wrapResult (
   result: any,
@@ -210,5 +220,3 @@ function wrapResult (
       }
   }
 }
-
-module.exports = MongoDatabase
