@@ -6,6 +6,7 @@ import type {
   UserWithCreds,
   User
 } from './types'
+import { List } from '../node_modules/immutable/dist/immutable'
 
 export default class Utils {
   static stripCreds (
@@ -17,7 +18,9 @@ export default class Utils {
       lastName: fullUser.lastName || '',
       registrationDate: fullUser.registrationDate || '',
       birthday: fullUser.birthday || '',
-      gender: fullUser.gender || ''
+      gender: fullUser.gender || '',
+      courses: fullUser.courses || List(),
+      role: fullUser.role || 'Student'
     }
   }
 }

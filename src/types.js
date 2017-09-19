@@ -5,6 +5,8 @@ import { List } from 'immutable'
 
 export type Gender = 'Male' | 'Female' | 'Other'
 
+export type Role = 'Teacher' | 'Student'
+
 export type CollectionName = 'User'
 
 export type User = {
@@ -13,7 +15,9 @@ export type User = {
   lastName: string,
   registrationDate: string,
   birthday: string,
-  gender: string
+  gender: string,
+  role: Role,
+  courses: List<string>
 }
 
 export type Credentials = {
@@ -27,13 +31,8 @@ export type InputCreds = {
   password: string
 }
 
-export type UserWithCreds = {
-  email: string,
-  firstName: string,
-  lastName: string,
-  registrationDate: string,
-  birthday: string,
-  gender: string,
+export type UserWithCreds =
+  User & {
   hash: string,
   salt: string
 }
@@ -75,5 +74,5 @@ export type Course = {
 export type CollectionDataType = User | Course
 
 export type CollectionData
-= { type: 'user', payload: UserWithCreds }
-| { type: 'course', payload: Course }
+  = { type: 'user', payload: UserWithCreds }
+  | { type: 'course', payload: Course }

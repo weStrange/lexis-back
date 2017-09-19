@@ -68,7 +68,7 @@ async function registrationHandler (ctx, next) {
   if (!(await User.findOne({ email: payload.email }))) {
     let result = await User.insert(newUser, creds)
 
-    ctx.body = result.serialize(false)
+    ctx.body = result.serialize()
   }
 
   return next()

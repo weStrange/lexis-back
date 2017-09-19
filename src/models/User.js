@@ -12,7 +12,7 @@ import type {
   User as UserType,
   CollectionData,
   Credentials,
-  UserWithCreds
+  UserWithCreds, Role
 } from '../types'
 
 const collectionName = 'User'
@@ -25,6 +25,8 @@ export default class User {
   registrationDate: string;
   birthday: string;
   gender: string;
+  role: Role;
+  courses: List<string>
 
   constructor (data: UserType) {
     // super(data)
@@ -35,6 +37,8 @@ export default class User {
     this.registrationDate = data.registrationDate
     this.birthday = data.birthday
     this.gender = data.gender
+    this.role = data.role
+    this.courses = data.courses
   }
 
   // allow access to the raw mongodb driver's database instance, if it exists (ensureConnected called at least once)
@@ -170,7 +174,9 @@ export default class User {
       lastName: this.lastName,
       registrationDate: this.registrationDate,
       birthday: this.birthday,
-      gender: this.gender
+      gender: this.gender,
+      role: this.role,
+      courses: this.courses
     }
   }
 /*

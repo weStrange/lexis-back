@@ -6,7 +6,7 @@ import mongodb from 'mongodb'
 import { List } from 'immutable'
 
 import { getDbInstance } from './MongoDatabase'
-import Utils from '../utils'
+// import Utils from '../utils'
 // import Model from './Model'
 import type {
   Course as CourseType,
