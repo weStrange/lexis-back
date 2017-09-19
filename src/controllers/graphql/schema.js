@@ -19,6 +19,14 @@ const Gender = new Graphql.GraphQLEnumType({
   }
 })
 
+const Role = new Graphql.GraphQLEnumType({
+  name: 'Role',
+  values: {
+    STUDENT: { value: 'Student' },
+    TEACHER: { value: 'Teacher' }
+  }
+})
+
 const userType = new Graphql.GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -49,6 +57,14 @@ const userType = new Graphql.GraphQLObjectType({
     achievements: {
       type: AchievementTypeEnum,
       resolve: (user) => user.achievements
+    },
+    role: {
+      type: Role,
+      resolve: (user) => user.role
+    },
+    courses: {
+      type: new Graphql.GraphQLList(Graphql.GraphQLString),
+      resolve: (user) => user.courses
     }
   })
 })
@@ -133,7 +149,7 @@ const achievementType = new Graphql.GraphQLObjectType({
     condition: {
       type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
       resolve: (achievement) => achievement.condition
-    },
+    }
   }
 })
 
@@ -212,7 +228,8 @@ const mutationType = new Graphql.GraphQLObjectType({
         lastName: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)},
         birthday: {type: Graphql.GraphQLString},
         password: {type: Graphql.GraphQLString},
-        gender: {type: Gender}
+        gender: {type: Gender},
+        role: {type: Role}
       },
       resolve: async (source, args) => {
         let newUser = {

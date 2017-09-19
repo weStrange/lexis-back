@@ -29,6 +29,14 @@ var userSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  role: {
+    type: String,
+    required: true
+  },
+  course: {
+    type: [String],
+    require: true,
+  },
   hash: String,
   salt: String
 })
