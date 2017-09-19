@@ -70,7 +70,7 @@
     "parser": "babel-eslint"
   },
   "scripts": {
-    "devserver": "yarn run babel src/ -- src/ -d dist/ && node dist/index.js",
+    "start": "yarn run babel src/ -- src/ -d dist/ && node dist/index.js",
     "test": "standard && flow && jest"
   },
   "jest": {
