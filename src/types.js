@@ -1,6 +1,8 @@
 /* @flow */
 'use strict'
 
+import { List } from 'immutable'
+
 export type Gender = 'Male' | 'Female' | 'Other'
 
 export type CollectionName = 'User'
@@ -36,10 +38,38 @@ export type UserWithCreds = {
   salt: string
 }
 
-// TODO: fill this in
+export type Exercise = {
+  id: string,
+  name: string,
+  data: string
+}
+
+export type Lesson = {
+  id: string,
+  name: string,
+  exercises: List<Exercise>
+}
+
+export type Level = {
+  id: string,
+  name: string,
+  lessons: List<Lesson>
+}
+
+export type Achievement = {
+  id: string,
+  name: string,
+  type: 'GENERAL' | 'COURSE',
+  condition: string
+}
+
 export type Course = {
-  id: number,
-  name: string
+  id: string,
+  creatorEmail: string,
+  name: string,
+  students: List<string>,
+  levels: List<Level>,
+  achievements: List<Achievement>
 }
 
 export type CollectionDataType = User | Course

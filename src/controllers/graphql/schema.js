@@ -4,6 +4,8 @@
 import * as Graphql from 'graphql'
 
 import UserModel from '../../models/User'
+import CourseModel from '../../models/Course'
+
 import Utils from '../../utils'
 
 import { getHashAndSalt } from '../../auth/oauth'
@@ -98,7 +100,7 @@ const levelType = new Graphql.GraphQLObjectType({
       type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
       resolve: (level) => level.name
     },
-    levels: {
+    lessons: {
       type: new Graphql.GraphQLList(lessonType),
       resolve: (level) => level.lessons
     }
@@ -167,7 +169,7 @@ const courseType = new Graphql.GraphQLObjectType({
 
 const queryType = new Graphql.GraphQLObjectType({
   name: 'Query',
-  description: 'query users',
+  description: 'All queries',
   fields: {
     user: {
       type: userType,
@@ -186,10 +188,13 @@ const queryType = new Graphql.GraphQLObjectType({
         name: {type: Graphql.GraphQLString}
       },
       resolve: async (source, args) => {
-        // get the course here somehow
-        let foundCourse = {}
+        let foundCourse = (await CourseModel.findOne({ name: args.name }))
 
-        return foundCourse
+        if (foundCourse) {
+          return (await foundCourse).serialize()
+        }
+
+        return null
       }
     }
   }
@@ -197,7 +202,7 @@ const queryType = new Graphql.GraphQLObjectType({
 
 const mutationType = new Graphql.GraphQLObjectType({
   name: 'Mutation',
-  description: 'Mutation of the users',
+  description: 'All mutations',
   fields: {
     addUser: {
       type: userType,
@@ -233,6 +238,15 @@ const mutationType = new Graphql.GraphQLObjectType({
         UserModel.delete(args)
 
         return theUser
+      }
+    },
+    addCourse: {
+      type: courseType,
+      args: {
+        name: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)}
+      },
+      resolve: async (source, args) => {
+        return (await CourseModel.insert(args)).serialize()
       }
     }
   }
