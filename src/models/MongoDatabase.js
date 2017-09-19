@@ -9,6 +9,7 @@ import dotenv from 'dotenv'
 import { List } from 'immutable'
 
 import userModel from './mongoose/UserModel'
+import courseModel from './mongoose/CourseModel'
 
 import type {
   CollectionName,
@@ -147,7 +148,8 @@ class MongoDatabase {
       case 'User':
         return userModel
 
-      // TODO: aff Course collection and all the other collections here
+      case 'Course':
+        return courseModel
 
       default:
         throw new Error('The collection with the given name does not exist.')

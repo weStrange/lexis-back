@@ -17,7 +17,7 @@ import type {
 
 const collectionName = 'User'
 
-class User {
+export default class User {
   _id: any;
   email: string;
   firstName: string;
@@ -163,7 +163,7 @@ class User {
     return new User(filtered.first())
   }
 
-  serialize (withId: boolean = true): UserType {
+  serialize (): UserType {
     return {
       email: this.email,
       firstName: this.firstName,
@@ -205,5 +205,3 @@ function wrapData (
     payload: data
   }
 }
-
-module.exports = User

@@ -4,14 +4,12 @@
 import destroyable from 'server-destroy'
 import Koa from 'koa'
 import bodyParser from 'koa-body'
-import jwt from 'koa-jwt'
+// import jwt from 'koa-jwt'
 import logger from 'winston'
 import dotenv from 'dotenv'
 
 import passport from './auth/passport'
 import configureAuth from './middleware/authenticate'
-import responder from './middleware/responder'
-import config from './config'
 import configureRouting from './middleware/routing'
 
 if (module.hot) {
