@@ -265,6 +265,26 @@ const mutationType = new Graphql.GraphQLObjectType({
       resolve: async (source, args) => {
         return (await CourseModel.insert(args)).serialize()
       }
+    },
+    addStudentToCourse: {
+      type: Graphql.GraphQLBoolean,
+      args: {
+        courseName: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)},
+        studentEmail: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)}
+      },
+      resolve: async (source, args) => {
+        return (await CourseModel.addStudent(args.courseName, args.studentEmail))
+      }
+    },
+    removeStudentFromCourse: {
+      type: Graphql.GraphQLBoolean,
+      args: {
+        courseName: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)},
+        studentEmail: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)}
+      },
+      resolve: async (source, args) => {
+        return (await CourseModel.removeStudent(args.courseName, args.studentEmail))
+      }
     }
   }
 })

@@ -65,7 +65,8 @@ export default class Course {
   }
 
   static async find (query: any): Promise<List<Course>> {
-    let results = await Course.getDb().select(query, Course.getCollectionName())
+    let results = await Course.getDb()
+      .select(query, Course.getCollectionName())
     // results = await results.next();
     if (!results) return List()
 
@@ -96,15 +97,41 @@ export default class Course {
     return result.result.ok
   }
 
-  static async update (query: any, data: CourseType): Promise<number> {
+  static async update (query: any, data: any): Promise<number> {
     query = Course.transformQuery(query)
     const result = await Course.getDb().update(
       query,
-      wrapData(data),
+      data,
       Course.getCollectionName()
     )
 
     return result.ok
+  }
+
+  static async addStudent (
+    courseName: string,
+    studentEmail: string
+  ): Promise<boolean> {
+    return await Course.getDb()
+      .pushToArray(
+        { name: courseName },
+        studentEmail,
+        'students',
+        Course.getCollectionName()
+      )
+  }
+
+  static async removeStudent (
+    courseName: string,
+    studentEmail: string
+  ): Promise<boolean> {
+    return Course.getDb()
+      .removeFromArray(
+        { name: courseName },
+        studentEmail,
+        'students',
+        Course.getCollectionName()
+      )
   }
 
   static async insert (data: CourseType): Promise<Course> {
