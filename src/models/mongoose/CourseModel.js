@@ -31,6 +31,9 @@ const levelSchema = new mongoose.Schema({
   },
   lessons: {
     type: [lessonSchema]
+  },
+  image: {
+    type: Buffer
   }
 })
 
@@ -47,6 +50,9 @@ const achievementSchema = new mongoose.Schema({
   condition: {
     type: String,
     required: true
+  },
+  image: {
+    type: Buffer
   }
 })
 
@@ -67,6 +73,9 @@ const courseSchema = new mongoose.Schema({
   },
   achievements: {
     type: [achievementSchema]
+  },
+  image: {
+    type: Buffer
   }
 })
 

@@ -86,6 +86,34 @@ export default class User {
     return filtered.map(data => new User(data))
   }
 */
+
+
+  static async addCourse (
+    courseName: string,
+    studentEmail: string
+  ): Promise<boolean> {
+    return await User.getDb()
+      .pushToArray(
+        { email: studentEmail },
+        courseName,
+        'courses',
+        User.getCollectionName()
+      )
+  }
+
+  static async removeCourse (
+    courseName: string,
+    studentEmail: string
+  ): Promise<boolean> {
+    return User.getDb()
+      .removeFromArray(
+        { name: courseName },
+        studentEmail,
+        'courses',
+        User.getCollectionName()
+      )
+  }
+
   static async find (query: any): Promise<List<User>> {
     let results = await User.getDb().select(query, User.getCollectionName())
     // results = await results.next();

@@ -57,7 +57,7 @@ class MongoDatabase {
     query: any,
     collectionName: CollectionName
   ): Promise<List<CollectionData>> {
-    await this.ensureConnected()
+    // await this.ensureConnected()
 
     if (typeof query === 'string') query = {_id: query}
 
@@ -78,7 +78,7 @@ class MongoDatabase {
     data: CollectionData,
     collectionName: CollectionName
   ): Promise<CollectionData> {
-    await this.ensureConnected()
+    // await this.ensureConnected()
 
     const collection = await this.collection(collectionName)
 
@@ -96,17 +96,103 @@ class MongoDatabase {
     return result
   }
 
-  async update (
+  async pushToArray (
     query: any,
-    data: CollectionData,
+    data: any,
+    arrayFieldName: string,
     collectionName: CollectionName
-  ): Promise<any> {
+  ): Promise<boolean> {
     await this.ensureConnected()
 
     const collection = this.collection(collectionName)
 
     let result = await new Promise((resolve, reject) => {
-      collection.update(query, {$set: data.payload}, (err: Error, result: any) => {
+
+      collection.find(query, async (err, result) => {
+        let saveOps = List()
+        if (err) reject(err)
+
+        result.forEach((p) => {
+          p[arrayFieldName].push(data)
+
+          // adding promises for all the save operations
+          p.save((error, r) => {
+            saveOps = saveOps.push(new Promise((resolve, reject) => {
+              if (error) {
+                reject(error)
+              }
+
+              resolve(true)
+            }))
+          })
+        })
+
+        let results = await Promise.all(saveOps)
+
+        if (results.filter((s) => s)) {
+          resolve(true)
+        }
+
+        resolve(false)
+      })
+    })
+
+    return result
+  }
+
+  async removeFromArray (
+    query: any,
+    data: any,
+    arrayFieldName: string,
+    collectionName: CollectionName
+  ): Promise<boolean> {
+    const collection = this.collection(collectionName)
+
+    let result = await new Promise((resolve, reject) => {
+      collection.find(query, async (err, result) => {
+        let saveOps = List()
+
+        result.forEach((p) => {
+          let indexToRemove = p[arrayFieldName].indexOf(data)
+          if (indexToRemove > -1) {
+            p[arrayFieldName].splice(indexToRemove, 1)
+          }
+
+          // adding promises for all the save operations
+          p.save((error, r) => {
+            saveOps = saveOps.push(new Promise((resolve, reject) => {
+              if (error) {
+                reject(error)
+              }
+              resolve(true)
+            }))
+          })
+        })
+
+        let results = await Promise.all(saveOps)
+
+        if (results.filter((s) => s)) {
+          resolve(true)
+        }
+
+        resolve(false)
+      })
+    })
+
+    return result
+  }
+
+  async update (
+    query: any,
+    data: any,
+    collectionName: CollectionName
+  ): Promise<any> {
+    // await this.ensureConnected()
+
+    const collection = this.collection(collectionName)
+
+    let result = await new Promise((resolve, reject) => {
+      collection.update(query, {$set: data}, (err: Error, result: any) => {
         if (err) {
           reject(err)
         }
@@ -120,7 +206,7 @@ class MongoDatabase {
   }
 
   async delete (query: any, collectionName: CollectionName): Promise<any> {
-    await this.ensureConnected()
+    // await this.ensureConnected()
 
     const collection = this.collection(collectionName)
     let result = await new Promise((resolve, reject) => {
@@ -138,7 +224,7 @@ class MongoDatabase {
   }
 
   async count (query: any, collectionName: CollectionName): Promise<number> {
-    await this.ensureConnected()
+    // await this.ensureConnected()
 
     return this.collection(collectionName).find(query).count()
   }
