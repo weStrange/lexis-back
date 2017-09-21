@@ -112,7 +112,7 @@ export default class Course {
     courseName: string,
     studentEmail: string
   ): Promise<boolean> {
-    return await Course.getDb()
+    return Course.getDb()
       .pushToArray(
         { name: courseName },
         studentEmail,

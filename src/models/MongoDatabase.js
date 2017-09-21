@@ -108,7 +108,6 @@ class MongoDatabase {
     const collection = this.collection(collectionName)
 
     let result = await new Promise((resolve, reject) => {
-
       collection.find(query, async (err, result) => {
         let saveOps = List()
         if (err) reject(err)

@@ -88,7 +88,6 @@ export default class User {
   }
 */
 
-
   static async addCourse (
     courseName: string,
     studentEmail: string
