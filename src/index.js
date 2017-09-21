@@ -3,7 +3,7 @@
 
 import destroyable from 'server-destroy'
 import Koa from 'koa'
-import bodyParser from 'koa-body'
+// import bodyParser from 'koa-body'
 // import jwt from 'koa-jwt'
 import logger from 'winston'
 import dotenv from 'dotenv'
@@ -47,10 +47,9 @@ if(config.env !== 'production'){
 
 // top level handler (for errors and response rendering) also adds the helper
 // method ctx.json() and ctx.view() and ctx.log as well as renders the final response
-// app.use(cors())
 // app.use(responder({appRoot: config.appRoot, app: app}))
 // note: by default multipart requests are not parsed. More info: https://github.com/dlau/koa-body
-app.use(bodyParser())
+// app.use(bodyParser({multipart: true}))
 // app.use(netLogger.request());
 // app.use(new CSRF(config.csrf));
 // your authentication middleware

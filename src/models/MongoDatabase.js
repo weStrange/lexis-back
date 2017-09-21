@@ -10,6 +10,7 @@ import { List } from 'immutable'
 
 import userModel from './mongoose/UserModel'
 import courseModel from './mongoose/CourseModel'
+import avatarModel from './mongoose/AvatarModel'
 
 import type {
   CollectionName,
@@ -237,6 +238,9 @@ class MongoDatabase {
       case 'Course':
         return courseModel
 
+      case 'Avatar':
+        return avatarModel
+
       default:
         throw new Error('The collection with the given name does not exist.')
     }
@@ -297,6 +301,12 @@ function wrapResult (
     case 'Course':
       return {
         type: 'course',
+        payload: result
+      }
+
+    case 'Avatar':
+      return {
+        type: 'avatar',
         payload: result
       }
 

@@ -4,8 +4,10 @@
 
 import registrationApiController from './registrationApiController'
 import GraphqlApiController from './GraphqlApiController'
+import ImgController from './ImgController'
 
 export default {
   GraphqlApiController,
-  registrationApiController
+  registrationApiController,
+  ImgController
 }

@@ -27,6 +27,7 @@ export default class User {
   gender: string;
   role: Role;
   courses: List<string>
+  avatarUrl: ?string
 
   constructor (data: UserType) {
     // super(data)
@@ -204,7 +205,8 @@ export default class User {
       birthday: this.birthday,
       gender: this.gender,
       role: this.role,
-      courses: this.courses
+      courses: this.courses,
+      avatarUrl: this.avatarUrl
     }
   }
 /*

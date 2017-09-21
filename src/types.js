@@ -17,7 +17,8 @@ export type User = {
   birthday: string,
   gender: string,
   role: Role,
-  courses: List<string>
+  courses: List<string>,
+  avatarUrl: ?string
 }
 
 export type Credentials = {
@@ -71,8 +72,15 @@ export type Course = {
   achievements: List<Achievement>
 }
 
+export type Avatar = {
+  email: string,
+  img: ?Buffer,
+  type: ?string
+}
+
 export type CollectionDataType = User | Course
 
 export type CollectionData
   = { type: 'user', payload: UserWithCreds }
   | { type: 'course', payload: Course }
+  | { type: 'avatar', payload: Avatar }

@@ -65,6 +65,10 @@ const userType = new Graphql.GraphQLObjectType({
     courses: {
       type: new Graphql.GraphQLList(Graphql.GraphQLString),
       resolve: (user) => user.courses
+    },
+    avatarUrl: {
+      type: Graphql.GraphQLString,
+      resolve: (user) => user.avatarUrl
     }
   })
 })
@@ -190,7 +194,7 @@ const queryType = new Graphql.GraphQLObjectType({
     user: {
       type: userType,
       args: {
-        email: {type: Graphql.GraphQLString}
+        email: { type: Graphql.GraphQLString }
       },
       resolve: async (source, args) => {
         let foundUser = (await UserModel.findOne({ email: args.email }))
@@ -201,7 +205,7 @@ const queryType = new Graphql.GraphQLObjectType({
     course: {
       type: courseType,
       args: {
-        name: {type: Graphql.GraphQLString}
+        name: { type: Graphql.GraphQLString }
       },
       resolve: async (source, args) => {
         let foundCourse = (await CourseModel.findOne({ name: args.name }))
@@ -223,13 +227,13 @@ const mutationType = new Graphql.GraphQLObjectType({
     addUser: {
       type: userType,
       args: {
-        email: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)},
-        firstName: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)},
-        lastName: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)},
-        birthday: {type: Graphql.GraphQLString},
-        password: {type: Graphql.GraphQLString},
-        gender: {type: Gender},
-        role: {type: Role}
+        email: { type: new Graphql.GraphQLNonNull(Graphql.GraphQLString) },
+        firstName: { type: new Graphql.GraphQLNonNull(Graphql.GraphQLString) },
+        lastName: { type: new Graphql.GraphQLNonNull(Graphql.GraphQLString) },
+        birthday: { type: Graphql.GraphQLString },
+        password: { type: Graphql.GraphQLString },
+        gender: { type: Gender },
+        role: { type: Role }
       },
       resolve: async (source, args) => {
         let newUser = {
@@ -247,7 +251,7 @@ const mutationType = new Graphql.GraphQLObjectType({
     deleteUser: {
       type: userType,
       args: {
-        email: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)}
+        email: { type: new Graphql.GraphQLNonNull(Graphql.GraphQLString) }
       },
       resolve: async (source, args) => {
         let theUser = await UserModel.findOne(args)
@@ -260,10 +264,29 @@ const mutationType = new Graphql.GraphQLObjectType({
     addCourse: {
       type: courseType,
       args: {
-        name: {type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)}
+        name: { type: new Graphql.GraphQLNonNull(Graphql.GraphQLString) }
       },
       resolve: async (source, args) => {
         return (await CourseModel.insert(args)).serialize()
+      }
+    },
+    uploadPicture: {
+      type: userType,
+      args: {
+        email: { type: new Graphql.GraphQLNonNull(Graphql.GraphQLString) },
+        avatarUrl: { type: new Graphql.GraphQLNonNull(Graphql.GraphQLString) }
+      },
+      resolve: async (source, { email, avatarUrl }) => {
+        let theUser = await UserModel.findOne({ email })
+        let userCreds = await UserModel.findCreds(email)
+
+        let userMutation = { ...theUser, avatarUrl }
+
+        if (userCreds) {
+          const updateResult = await UserModel.update({ email }, userMutation, userCreds)
+
+          if (updateResult) return userMutation
+        }
       }
     },
     addStudentToCourse: {
