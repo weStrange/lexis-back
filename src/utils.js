@@ -20,7 +20,8 @@ export default class Utils {
       birthday: fullUser.birthday || '',
       gender: fullUser.gender || '',
       courses: fullUser.courses || List(),
-      role: fullUser.role || 'Student'
+      role: fullUser.role || 'Student',
+      avatarUrl: fullUser.avatarUrl || null
     }
   }
 }

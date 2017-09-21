@@ -33,9 +33,13 @@ var userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  avatarUrl: {
+    type: String,
+    required: false
+  },
   course: {
     type: [String],
-    require: true,
+    require: true
   },
   hash: String,
   salt: String
