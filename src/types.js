@@ -103,7 +103,7 @@ export type CourseQueryPayload = {
 export type Avatar = {
   email: string,
   img: ?Buffer,
-  type: ?string
+  mimetype: ?string
 }
 
 export type CollectionDataType = User | Course

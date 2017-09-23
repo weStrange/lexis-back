@@ -13,7 +13,7 @@ const avatarSchema = new mongoose.Schema({
     type: Buffer,
     required: false
   },
-  type: {
+  mimetype: {
     type: String,
     required: false
   }

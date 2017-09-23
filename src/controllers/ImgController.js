@@ -12,7 +12,7 @@ export default function configureUserApiController (router: any) {
 
     if (foundAvatar) {
       console.log(foundAvatar)
-      ctx.type = foundAvatar.type
+      ctx.type = foundAvatar.mimetype
       ctx.body = foundAvatar.img
     }
     //

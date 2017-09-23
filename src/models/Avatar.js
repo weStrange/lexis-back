@@ -19,14 +19,14 @@ export default class Avatar {
   _id: any
   email: string
   img: ?Buffer
-  type: ?string
+  mimetype: ?string
 
   constructor (data: AvatarType) {
     // super(data)
 
     this.email = data.email
     this.img = data.img
-    this.type = data.type
+    this.mimetype = data.mimetype
   }
 
   // allow access to the raw mongodb driver's database instance, if it exists (ensureConnected called at least once)
@@ -65,8 +65,6 @@ export default class Avatar {
     let filtered = []
     results
       .forEach((p) => {
-        console.log('RESULTS')
-        console.log(p)
         if (p.type === 'avatar') {
           filtered.push(p.payload)
         }
@@ -129,7 +127,7 @@ export default class Avatar {
     return {
       email: this.email,
       img: this.img,
-      type: this.type
+      mimetype: this.mimetype
     }
   }
 
