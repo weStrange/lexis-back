@@ -6,60 +6,58 @@ import {
   GraphQLNonNull,
   GraphQLString,
   GraphQLList,
-  GraphQLEnumType
+  GraphQLEnumType,
+  GraphQLInputObjectType
 } from 'graphql'
+
+const exerciseInputType = new GraphQLInputObjectType({
+  name: 'ExerciseInput',
+  fields: {
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    data: { type: new GraphQLNonNull(GraphQLString) }
+  }
+})
 
 const exerciseType = new GraphQLObjectType({
   name: 'Exercise',
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (exercise) => exercise.id
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (exercise) => exercise.name
-    },
-    data: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (exercise) => exercise.data
-    }
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    data: { type: new GraphQLNonNull(GraphQLString) }
+  }
+})
+
+const lessonInputType = new GraphQLInputObjectType({
+  name: 'LessonInput',
+  fields: {
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    exercises: { type: new GraphQLList(exerciseInputType) }
   }
 })
 
 const lessonType = new GraphQLObjectType({
   name: 'Lesson',
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (lesson) => lesson.id
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (lesson) => lesson.name
-    },
-    exercises: {
-      type: new GraphQLList(exerciseType),
-      resolve: (lesson) => lesson.exercises
-    }
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    exercises: { type: new GraphQLList(exerciseType) }
   }
 })
 
-const levelType = new GraphQLObjectType({
+export const levelInputType = new GraphQLInputObjectType({
+  name: 'LevelInput',
+  fields: {
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    lessons: { type: new GraphQLList(lessonInputType) }
+  }
+})
+
+export const levelType = new GraphQLObjectType({
   name: 'Level',
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (level) => level.id
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (level) => level.name
-    },
-    lessons: {
-      type: new GraphQLList(lessonType),
-      resolve: (level) => level.lessons
-    }
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    lessons: { type: new GraphQLList(lessonType) }
   }
 })
 
@@ -74,51 +72,33 @@ export const AchievementTypeEnum = new GraphQLEnumType({
 const achievementType = new GraphQLObjectType({
   name: 'Achievement',
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (achievement) => achievement.id
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (achievement) => achievement.name
-    },
-    type: {
-      type: AchievementTypeEnum,
-      resolve: (achievement) => achievement.type
-    },
-    condition: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (achievement) => achievement.condition
-    }
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    type: { type: AchievementTypeEnum },
+    condition: { type: new GraphQLNonNull(GraphQLString) }
+  }
+})
+
+export const Difficulty = new GraphQLEnumType({
+  name: 'Difficulty',
+  values: {
+    BEGINNER: { value: 'Beginner' },
+    INTERMEDIATE: { value: 'Intermediate' },
+    UPPERINTERMEDIATE: { value: 'Upper-intermediate' },
+    ADVANCED: { value: 'Advanced' },
+    PROFICIENT: { value: 'PROFICIENT' }
   }
 })
 
 export const courseType = new GraphQLObjectType({
   name: 'Course',
   fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (course) => course.id
-    },
-    creatorEmail: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (course) => course.creatorEmail
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (course) => course.name
-    },
-    students: {
-      type: new GraphQLList(GraphQLString),
-      resolve: (course) => course.students
-    },
-    levels: {
-      type: new GraphQLList(levelType),
-      resolve: (course) => course.levels
-    },
-    achievements: {
-      type: new GraphQLList(achievementType),
-      resolve: (course) => course.achievements
-    }
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    creatorEmail: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    students: { type: new GraphQLList(GraphQLString) },
+    levels: { type: new GraphQLList(levelType) },
+    achievements: { type: new GraphQLList(achievementType) },
+    difficulty: { type: new GraphQLNonNull(Difficulty) }
   })
 })

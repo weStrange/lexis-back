@@ -4,12 +4,21 @@
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLString
+  GraphQLString,
+  GraphQLList,
+  GraphQLInt
 } from 'graphql'
 
 import CourseModel from '../../../models/Course'
 
-import { courseType } from './types'
+import {
+  courseType,
+  Difficulty,
+  levelInputType,
+  AchievementTypeEnum
+} from './types'
+
+import type { CourseInsertPayload } from '../../../types'
 
 export const addStudentToCourse = {
   type: GraphQLBoolean,
@@ -17,7 +26,10 @@ export const addStudentToCourse = {
     courseName: {type: new GraphQLNonNull(GraphQLString)},
     studentEmail: {type: new GraphQLNonNull(GraphQLString)}
   },
-  resolve: async (source: any, args: any) => {
+  resolve: async (
+    source: any,
+    args: { courseName: string, studentEmail: string }
+  ) => {
     return CourseModel.addStudent(args.courseName, args.studentEmail)
   }
 }
@@ -28,7 +40,10 @@ export const removeStudentFromCourse = {
     courseName: {type: new GraphQLNonNull(GraphQLString)},
     studentEmail: {type: new GraphQLNonNull(GraphQLString)}
   },
-  resolve: async (source: any, args: any) => {
+  resolve: async (
+    source: any,
+    args: { courseName: string, studentEmail: string }
+  ) => {
     return CourseModel.removeStudent(args.courseName, args.studentEmail)
   }
 }
@@ -36,10 +51,29 @@ export const removeStudentFromCourse = {
 export const addCourse = {
   type: courseType,
   args: {
-    name: { type: new GraphQLNonNull(GraphQLString) }
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    difficulty: { type: new GraphQLNonNull(Difficulty) },
+    levels: { type: new GraphQLList(levelInputType) },
+    achievements: { type: new GraphQLList(AchievementTypeEnum) },
+    students: { type: new GraphQLList(GraphQLString) }
+  },
+  resolve: async (source: any, args: CourseInsertPayload) => {
+    return (await CourseModel.insert(args)).serialize()
+  }
+}
+
+export const updateCourse = {
+  type: GraphQLInt,
+  args: {
+    id: { type: GraphQLString },
+    name: { type: GraphQLString },
+    difficulty: { type: Difficulty },
+    levels: { type: new GraphQLList(levelInputType) },
+    achievements: { type: new GraphQLList(AchievementTypeEnum) },
+    students: { type: new GraphQLList(GraphQLString) }
   },
   resolve: async (source: any, args: any) => {
-    return (await CourseModel.insert(args)).serialize()
+    return CourseModel.update({ id: args.id }, args)
   }
 }
 
@@ -48,7 +82,7 @@ export const deleteCourse = {
   args: {
     id: { type: new GraphQLNonNull(GraphQLString) }
   },
-  resolve: async (source: any, args: any) => {
-    return CourseModel.delete({ ...args.id })
+  resolve: async (source: any, args: { id: string }) => {
+    return CourseModel.delete({ id: args.id })
   }
 }

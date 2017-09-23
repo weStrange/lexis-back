@@ -3,7 +3,7 @@
 
 import mongodb from 'mongodb'
 
-import { List } from 'immutable'
+// import { List } from 'immutable'
 
 import { getDbInstance } from './MongoDatabase'
 import Utils from '../utils'
@@ -12,7 +12,9 @@ import type {
   User as UserType,
   CollectionData,
   Credentials,
-  UserWithCreds, Role
+  UserWithCreds,
+  Role,
+  Gender
 } from '../types'
 
 const collectionName = 'User'
@@ -23,10 +25,10 @@ export default class User {
   firstName: string;
   lastName: string;
   registrationDate: string;
-  birthday: string;
-  gender: string;
+  birthday: ?string;
+  gender: ?Gender;
   role: Role;
-  courses: List<string>
+  courses: Array<string>
   avatarUrl: ?string
 
   constructor (data: UserType) {
@@ -40,6 +42,7 @@ export default class User {
     this.gender = data.gender
     this.role = data.role
     this.courses = data.courses
+    this.avatarUrl = data.avatarUrl
   }
 
   // allow access to the raw mongodb driver's database instance, if it exists (ensureConnected called at least once)
@@ -114,16 +117,17 @@ export default class User {
       )
   }
 
-  static async find (query: any): Promise<List<User>> {
+  static async find (query: any): Promise<Array<User>> {
     let results = await User.getDb().select(query, User.getCollectionName())
+    // console.log(results)
     // results = await results.next();
-    if (!results) return List()
+    if (!results) return []
 
-    let filtered = List()
+    let filtered = []
     results
       .forEach((p) => {
         if (p.type === 'user') {
-          filtered = filtered.push(Utils.stripCreds(p.payload))
+          filtered.push(Utils.stripCreds(p.payload))
         }
       })
 
@@ -131,7 +135,7 @@ export default class User {
   }
 
   static async findOne (query: any): Promise<User | null> {
-    let result = (await this.find(query)).first()
+    let result = (await this.find(query))[0]
 
     if (result) {
       return result
@@ -165,7 +169,18 @@ export default class User {
     return result.result.ok
   }
 
-  static async update (query: any, data: UserType, credentials: Credentials): Promise<number> {
+  static async update (query: any, data: any): Promise<number> {
+    query = User.transformQuery(query)
+    const result = await User.getDb().update(
+      query,
+      data,
+      User.getCollectionName()
+    )
+
+    return result.ok
+  }
+
+  static async updateWithCreds (query: any, data: UserType, credentials: Credentials): Promise<number> {
     query = User.transformQuery(query)
     const result = await User.getDb().update(
       query,
@@ -183,16 +198,18 @@ export default class User {
         User.getCollectionName()
       )
 
-    let results = List.of(result)
-    let filtered = List()
+    let actualResult = Utils.stripCreds(result.payload)
+    /*
+    let results = result
+    let filtered = []
     results
       .forEach((p) => {
         if (p.type === 'user') {
-          filtered = filtered.push(Utils.stripCreds(p.payload))
+          filtered.push()
         }
-      })
+      }) */
 
-    return new User(filtered.first())
+    return new User(actualResult)
   }
 
   serialize (): UserType {
@@ -208,28 +225,6 @@ export default class User {
       avatarUrl: this.avatarUrl
     }
   }
-/*
-  async save (): Promise<User> {
-    let data = this.serialize()
-
-    if (this._id) {
-      // you could also do things like new mongodb.ObjectId(this.id) here if you want to be 100% compliant
-      return User.DB.update({ _id: this._id }, data, User.COLLECTION)
-    } else {
-      let user = await User.DB.insert(data, User.COLLECTION)
-
-      this._id = user._id.toString()
-    }
-    return this
-  }
-
-  async delete (): Promise<User> {
-    await User.DB.delete({ _id: this._id }, User.COLLECTION)
-    // const results = await User.DB.delete({_id: {'$in': [new mongodb.ObjectId(this.id)]}}, User.COLLECTION);
-    // do something with results, e.g. if CASCADE is not set, you might need to run through all associations and delete them all
-    return this
-  }
-  */
 }
 
 function wrapData (

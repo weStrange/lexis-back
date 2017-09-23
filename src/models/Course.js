@@ -3,7 +3,7 @@
 
 import mongodb from 'mongodb'
 
-import { List } from 'immutable'
+// import { List } from 'immutable'
 
 import { getDbInstance } from './MongoDatabase'
 // import Utils from '../utils'
@@ -12,7 +12,10 @@ import type {
   Course as CourseType,
   CollectionData,
   Level,
-  Achievement
+  Achievement,
+  CourseDifficulty,
+  CourseQueryPayload,
+  CourseInsertPayload
 } from '../types'
 
 const collectionName = 'Course'
@@ -21,9 +24,10 @@ export default class Course {
   _id: string;
   creatorEmail: string;
   name: string;
-  students: List<string>;
-  levels: List<Level>;
-  achievements: List<Achievement>;
+  students: Array<string>;
+  levels: Array<Level>;
+  achievements: Array<Achievement>;
+  difficulty: CourseDifficulty;
 
   constructor (data: CourseType) {
     // super(data)
@@ -34,6 +38,7 @@ export default class Course {
     this.students = data.students
     this.levels = data.levels
     this.achievements = data.achievements
+    this.difficulty = data.difficulty
   }
 
   // allow access to the raw mongodb driver's database instance, if it exists (ensureConnected called at least once)
@@ -64,25 +69,26 @@ export default class Course {
     return Course.getDb().count(query, Course.getCollectionName())
   }
 
-  static async find (query: any): Promise<List<Course>> {
+  static async find (query: CourseQueryPayload): Promise<Array<Course>> {
     let results = await Course.getDb()
       .select(query, Course.getCollectionName())
+    // console.log(results, query)
     // results = await results.next();
-    if (!results) return List()
+    if (!results) return []
 
-    let filtered = List()
+    let filtered = []
     results
       .forEach((p) => {
         if (p.type === 'course') {
-          filtered = filtered.push(p.payload)
+          filtered.push(p.payload)
         }
       })
 
     return filtered.map(data => new Course(data))
   }
 
-  static async findOne (query: any): Promise<Course | null> {
-    let result = (await this.find(query)).first()
+  static async findOne (query: CourseQueryPayload): Promise<Course | null> {
+    let result = (await this.find(query))[0]
 
     if (result) {
       return result
@@ -134,25 +140,28 @@ export default class Course {
       )
   }
 
-  static async insert (data: CourseType): Promise<Course> {
+  static async insert (data: CourseInsertPayload): Promise<Course> {
     // TODO: the creator's email should actually be derived from authorizaion logic at some point
-    data.creatorEmail = 'test@test.com'
+    data = {
+      ...data,
+      creatorEmail: 'test@test.com'
+    }
     let result = await Course.getDb()
       .insert(
         wrapData(data),
         Course.getCollectionName()
       )
-
-    let results = List.of(result)
-    let filtered = List()
+/*
+    let results = result
+    let filtered = []
     results
       .forEach((p) => {
         if (p.type === 'course') {
-          filtered = filtered.push(p.payload)
+          filtered.push(p.payload)
         }
       })
-
-    return new Course(filtered.first())
+*/
+    return new Course(result.payload)
   }
 
   serialize (): CourseType {
@@ -162,35 +171,14 @@ export default class Course {
       name: this.name,
       students: this.students,
       levels: this.levels,
-      achievements: this.achievements
+      achievements: this.achievements,
+      difficulty: this.difficulty
     }
   }
-/*
-  async save (): Promise<User> {
-    let data = this.serialize()
-
-    if (this._id) {
-      // you could also do things like new mongodb.ObjectId(this.id) here if you want to be 100% compliant
-      return User.DB.update({ _id: this._id }, data, User.COLLECTION)
-    } else {
-      let user = await User.DB.insert(data, User.COLLECTION)
-
-      this._id = user._id.toString()
-    }
-    return this
-  }
-
-  async delete (): Promise<User> {
-    await User.DB.delete({ _id: this._id }, User.COLLECTION)
-    // const results = await User.DB.delete({_id: {'$in': [new mongodb.ObjectId(this.id)]}}, User.COLLECTION);
-    // do something with results, e.g. if CASCADE is not set, you might need to run through all associations and delete them all
-    return this
-  }
-  */
 }
 
 function wrapData (
-  data: CourseType
+  data: any
 ): CollectionData {
   return {
     type: 'course',

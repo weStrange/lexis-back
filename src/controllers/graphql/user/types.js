@@ -31,45 +31,15 @@ export const Role = new GraphQLEnumType({
 export const userType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
-    email: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (user) => user.email
-    },
-    firstName: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (user) => user.firstName
-    },
-    lastName: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: (user) => user.lastName
-    },
-    registrationDate: {
-      type: GraphQLString,
-      resolve: (user) => user.registrationDate
-    },
-    birthday: {
-      type: GraphQLString,
-      resolve: (user) => user.birthday
-    },
-    gender: {
-      type: Gender,
-      resolve: (user) => user.gender
-    },
-    achievements: {
-      type: AchievementTypeEnum,
-      resolve: (user) => user.achievements
-    },
-    role: {
-      type: Role,
-      resolve: (user) => user.role
-    },
-    courses: {
-      type: new GraphQLList(GraphQLString),
-      resolve: (user) => user.courses
-    },
-    avatarUrl: {
-      type: GraphQLString,
-      resolve: (user) => user.avatarUrl
-    }
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    firstName: { type: new GraphQLNonNull(GraphQLString) },
+    lastName: { type: new GraphQLNonNull(GraphQLString) },
+    registrationDate: { type: GraphQLString },
+    birthday: { type: GraphQLString },
+    gender: { type: Gender },
+    achievements: { type: AchievementTypeEnum },
+    role: { type: Role },
+    courses: { type: new GraphQLList(GraphQLString) },
+    avatarUrl: { type: GraphQLString }
   })
 })
