@@ -19,15 +19,13 @@ export const uploadPicture = {
   resolve: async (source: any, args: any) => {
     let { email, avatarUrl } = args
 
-    let theUser = await UserModel.findOne({ email })
-    let userCreds = await UserModel.findCreds(email)
+    // let theUser = await UserModel.findOne({ email })
 
-    let userMutation = { ...theUser, avatarUrl }
+    // let userMutation = { ...theUser, avatarUrl }
 
-    if (userCreds) {
-      const updateResult = await UserModel.update({ email }, userMutation, userCreds)
+    const updateResult = await UserModel.update({ email }, args)
+    const userMutation = await UserModel.findOne({ email })
 
-      if (updateResult) return userMutation
-    }
+    if (updateResult) return userMutation
   }
 }

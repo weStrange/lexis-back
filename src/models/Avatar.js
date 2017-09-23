@@ -3,7 +3,7 @@
 
 import mongodb from 'mongodb'
 
-import { List } from 'immutable'
+// import { List } from 'immutable'
 
 import { getDbInstance } from './MongoDatabase'
 // import Utils from '../utils'
@@ -57,36 +57,18 @@ export default class Avatar {
     return Avatar.getDb().count(query, Avatar.getCollectionName())
   }
 
-  /*
-    static async where (query: any): Promise<List<User>> {
-      // transform query for this model
-      query = User.transformQuery(query)
-
-      const results = await User.getDb().select(query, User.getCollectionName())
-
-      let filtered = List()
-      results
-        .forEach((p) => {
-          if (p.type === 'user') {
-            filtered = filtered.push(Utils.stripCreds(p.payload))
-          }
-        })
-
-      return filtered.map(data => new User(data))
-    }
-  */
-  static async find (query: any): Promise<List<Avatar>> {
+  static async find (query: any): Promise<Array<Avatar>> {
     let results = await Avatar.getDb().select(query, Avatar.getCollectionName())
     // results = await results.next();
-    if (!results) return List()
+    if (!results) return []
 
-    let filtered = List()
+    let filtered = []
     results
       .forEach((p) => {
         console.log('RESULTS')
         console.log(p)
         if (p.type === 'avatar') {
-          filtered = filtered.push(p.payload)
+          filtered.push(p.payload)
         }
       })
 
@@ -94,7 +76,7 @@ export default class Avatar {
   }
 
   static async findOne (query: any): Promise<Avatar | null> {
-    let result = (await this.find(query)).first()
+    let result = (await this.find(query))[0]
 
     if (result) {
       return result
@@ -131,16 +113,16 @@ export default class Avatar {
 
     console.log(result)
 
-    let results = List.of(result)
-    let filtered = List()
+    let results = result
+    let filtered = []
     results
       .forEach((p) => {
         if (p.type === 'avatar') {
-          filtered = filtered.push(p.payload)
+          filtered.push(p.payload)
         }
       })
 
-    return new Avatar(filtered.first())
+    return new Avatar(filtered[0])
   }
 
   serialize (): AvatarType {

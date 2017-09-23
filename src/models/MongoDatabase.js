@@ -6,7 +6,7 @@ import logger from 'winston'
 import readLine from 'readline'
 import dotenv from 'dotenv'
 
-import { List } from 'immutable'
+// import { List } from 'immutable'
 
 import userModel from './mongoose/UserModel'
 import courseModel from './mongoose/CourseModel'
@@ -57,9 +57,8 @@ class MongoDatabase {
   async select (
     query: any,
     collectionName: CollectionName
-  ): Promise<List<CollectionData>> {
+  ): Promise<Array<CollectionData>> {
     // await this.ensureConnected()
-
     if (typeof query === 'string') query = {_id: query}
 
     const collection = this.collection(collectionName)
@@ -69,8 +68,8 @@ class MongoDatabase {
         if (err) {
           reject(err)
         }
-
-        resolve(List(result).map((p) => wrapResult(p, collectionName)))
+        // console.log(result)
+        resolve(result.map((p) => wrapResult(p, collectionName)))
       })
     })
   }
@@ -103,13 +102,13 @@ class MongoDatabase {
     arrayFieldName: string,
     collectionName: CollectionName
   ): Promise<boolean> {
-    await this.ensureConnected()
+    // await this.ensureConnected()
 
     const collection = this.collection(collectionName)
 
     let result = await new Promise((resolve, reject) => {
       collection.find(query, async (err, result) => {
-        let saveOps = List()
+        let saveOps = []
         if (err) reject(err)
 
         result.forEach((p) => {
@@ -117,7 +116,7 @@ class MongoDatabase {
 
           // adding promises for all the save operations
           p.save((error, r) => {
-            saveOps = saveOps.push(new Promise((resolve, reject) => {
+            saveOps.push(new Promise((resolve, reject) => {
               if (error) {
                 reject(error)
               }
@@ -150,7 +149,7 @@ class MongoDatabase {
 
     let result = await new Promise((resolve, reject) => {
       collection.find(query, async (err, result) => {
-        let saveOps = List()
+        let saveOps = []
 
         result.forEach((p) => {
           let indexToRemove = p[arrayFieldName].indexOf(data)
@@ -160,7 +159,7 @@ class MongoDatabase {
 
           // adding promises for all the save operations
           p.save((error, r) => {
-            saveOps = saveOps.push(new Promise((resolve, reject) => {
+            saveOps.push(new Promise((resolve, reject) => {
               if (error) {
                 reject(error)
               }
@@ -281,6 +280,8 @@ class MongoDatabase {
 }
 // create MongoDB instance only one time and keep reference to it
 const db = new MongoDatabase(encodeURI(connectionString))
+// make a connection
+db.ensureConnected()
 
 export function getDbInstance (): MongoDatabase {
   return db

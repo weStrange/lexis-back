@@ -76,7 +76,8 @@ const courseSchema = new mongoose.Schema({
   },
   image: {
     type: Buffer
-  }
+  },
+  difficulty: String
 })
 
 export default mongoose.model('Course', courseSchema)

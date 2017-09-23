@@ -2,25 +2,27 @@
 'use strict'
 
 import {
-  GraphQLString
+  GraphQLString,
+  GraphQLList
 } from 'graphql'
 
 import CourseModel from '../../../models/Course'
 
-import { courseType } from './types'
+import { courseType, Difficulty } from './types'
+
+import type { CourseQueryPayload } from '../../../types'
 
 export const course = {
-  type: courseType,
+  type: new GraphQLList(courseType),
   args: {
-    name: { type: GraphQLString }
+    id: { type: GraphQLString },
+    name: { type: GraphQLString },
+    creatorEmail: { type: GraphQLString },
+    difficulty: { type: Difficulty }
   },
-  resolve: async (source: any, args: any) => {
-    let foundCourse = (await CourseModel.findOne({ name: args.name }))
+  resolve: async (source: any, args: CourseQueryPayload) => {
+    let foundCourses = (await CourseModel.find(args))
 
-    if (foundCourse) {
-      return (await foundCourse).serialize()
-    }
-
-    return null
+    return (await foundCourses).map((p) => p.serialize())
   }
 }

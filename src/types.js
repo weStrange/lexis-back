@@ -1,7 +1,7 @@
 /* @flow */
 'use strict'
 
-import { List } from 'immutable'
+// import { List } from 'immutable'
 
 export type Gender = 'Male' | 'Female' | 'Other'
 
@@ -14,12 +14,17 @@ export type User = {
   firstName: string,
   lastName: string,
   registrationDate: string,
-  birthday: string,
-  gender: string,
+  birthday: ?string,
+  gender: ?Gender,
   role: Role,
-  courses: List<string>,
+  courses: Array<string>,
   avatarUrl: ?string
 }
+
+export type UserWithPassword
+  = User & {
+    password: string
+  }
 
 export type Credentials = {
   email: string,
@@ -47,13 +52,13 @@ export type Exercise = {
 export type Lesson = {
   id: string,
   name: string,
-  exercises: List<Exercise>
+  exercises: Array<Exercise>
 }
 
 export type Level = {
   id: string,
   name: string,
-  lessons: List<Lesson>
+  lessons: Array<Lesson>
 }
 
 export type Achievement = {
@@ -63,13 +68,36 @@ export type Achievement = {
   condition: string
 }
 
+export type CourseDifficulty
+  = 'Beginner'
+  | 'Intermediate'
+  | 'Upper-intermediate'
+  | 'Advanced'
+  | 'Proficient'
+
+export type CourseInsertPayload = {
+  name: string,
+  students?: Array<string>,
+  levels: Array<Level>,
+  achievements?: Array<Achievement>,
+  difficulty: CourseDifficulty
+}
+
 export type Course = {
   id: string,
   creatorEmail: string,
   name: string,
-  students: List<string>,
-  levels: List<Level>,
-  achievements: List<Achievement>
+  students: Array<string>,
+  levels: Array<Level>,
+  achievements: Array<Achievement>,
+  difficulty: CourseDifficulty
+}
+
+export type CourseQueryPayload = {
+  id?: string,
+  name?: string,
+  creatorEmail?: string,
+  difficulty?: string
 }
 
 export type Avatar = {
