@@ -52,6 +52,7 @@ export const addCourse = {
   type: courseType,
   args: {
     name: { type: new GraphQLNonNull(GraphQLString) },
+    description: { type: new GraphQLNonNull(GraphQLString) },
     difficulty: { type: new GraphQLNonNull(Difficulty) },
     levels: { type: new GraphQLList(levelInputType) },
     achievements: { type: new GraphQLList(AchievementTypeEnum) },
@@ -67,6 +68,7 @@ export const updateCourse = {
   args: {
     id: { type: GraphQLString },
     name: { type: GraphQLString },
+    description: { type: GraphQLString },
     difficulty: { type: Difficulty },
     levels: { type: new GraphQLList(levelInputType) },
     achievements: { type: new GraphQLList(AchievementTypeEnum) },

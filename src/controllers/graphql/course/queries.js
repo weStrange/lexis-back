@@ -17,6 +17,7 @@ export const course = {
   args: {
     id: { type: GraphQLString },
     name: { type: GraphQLString },
+    description: { type: GraphQLString },
     creatorEmail: { type: GraphQLString },
     difficulty: { type: Difficulty }
   },

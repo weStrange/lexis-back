@@ -24,6 +24,7 @@ export default class Course {
   _id: string;
   creatorEmail: string;
   name: string;
+  description: string;
   students: Array<string>;
   levels: Array<Level>;
   achievements: Array<Achievement>;
@@ -35,6 +36,7 @@ export default class Course {
     this._id = data.id
     this.creatorEmail = data.creatorEmail
     this.name = data.name
+    this.description = data.description
     this.students = data.students
     this.levels = data.levels
     this.achievements = data.achievements
@@ -169,6 +171,7 @@ export default class Course {
       id: this._id,
       creatorEmail: this.creatorEmail,
       name: this.name,
+      description: this.description,
       students: this.students,
       levels: this.levels,
       achievements: this.achievements,
