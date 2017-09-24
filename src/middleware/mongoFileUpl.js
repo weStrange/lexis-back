@@ -10,8 +10,10 @@ export default async (ctx: any, next: Function) => {
     const avatarMutation = {
       email,
       img: ctx.req.file.buffer,
-      type: ctx.req.file.mimetype
+      mimetype: ctx.req.file.mimetype
     }
+
+    console.log(avatarMutation)
 
     const foundAvatar = await Avatar.findOne({ email })
 
