@@ -48,6 +48,7 @@ export const levelInputType = new GraphQLInputObjectType({
   name: 'LevelInput',
   fields: {
     name: { type: new GraphQLNonNull(GraphQLString) },
+    description: { type: new GraphQLNonNull(GraphQLString) },
     lessons: { type: new GraphQLList(lessonInputType) }
   }
 })
@@ -57,6 +58,7 @@ export const levelType = new GraphQLObjectType({
   fields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
+    description: { type: new GraphQLNonNull(GraphQLString) },
     lessons: { type: new GraphQLList(lessonType) }
   }
 })
@@ -96,6 +98,7 @@ export const courseType = new GraphQLObjectType({
     id: { type: new GraphQLNonNull(GraphQLString) },
     creatorEmail: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
+    description: { type: new GraphQLNonNull(GraphQLString) },
     students: { type: new GraphQLList(GraphQLString) },
     levels: { type: new GraphQLList(levelType) },
     achievements: { type: new GraphQLList(achievementType) },

@@ -58,6 +58,7 @@ export type Lesson = {
 export type Level = {
   id: string,
   name: string,
+  description: string,
   lessons: Array<Lesson>
 }
 
@@ -77,6 +78,7 @@ export type CourseDifficulty
 
 export type CourseInsertPayload = {
   name: string,
+  description: string,
   students?: Array<string>,
   levels: Array<Level>,
   achievements?: Array<Achievement>,
@@ -87,6 +89,7 @@ export type Course = {
   id: string,
   creatorEmail: string,
   name: string,
+  description: string,
   students: Array<string>,
   levels: Array<Level>,
   achievements: Array<Achievement>,

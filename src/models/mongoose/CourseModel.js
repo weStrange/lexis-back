@@ -29,6 +29,10 @@ const levelSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  description: {
+    type: String,
+    required: false
+  },
   lessons: {
     type: [lessonSchema]
   },
@@ -64,6 +68,10 @@ const courseSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
+  },
+  description: {
+    type: String,
+    required: false
   },
   students: {
     type: [String]
