@@ -63,15 +63,10 @@ class MongoDatabase {
 
     const collection = this.collection(collectionName)
 
-    return new Promise((resolve, reject) => {
-      collection.find(query, (err: Error, result: Array<CollectionDataType>) => {
-        if (err) {
-          reject(err)
-        }
-        // console.log(result)
-        resolve(result.map((p) => wrapResult(p, collectionName)))
+    return collection.find(query)
+      .then((result: Array<CollectionDataType>) => {
+        return result.map((p) => wrapResult(p, collectionName))
       })
-    })
   }
 
   async insert (
@@ -82,15 +77,10 @@ class MongoDatabase {
 
     const collection = await this.collection(collectionName)
 
-    let result = await new Promise((resolve, reject) => {
-      collection.create(data.payload, (err: Error, result: CollectionDataType) => {
-        if (err) {
-          reject(err)
-        }
-
-        resolve(wrapResult(result, collectionName))
+    let result = await collection.create(data.payload)
+      .then((result: CollectionDataType) => {
+        return wrapResult(result, collectionName)
       })
-    })
 
     // logger.info(`Inserted ${result.insertedCount} records into collection ${collectionName}`)
     return result
@@ -190,15 +180,7 @@ class MongoDatabase {
 
     const collection = this.collection(collectionName)
 
-    let result = await new Promise((resolve, reject) => {
-      collection.update(query, {$set: data}, (err: Error, result: any) => {
-        if (err) {
-          reject(err)
-        }
-
-        resolve(result)
-      })
-    })
+    let result = await collection.update(query, {$set: data})
 
     logger.info(`Updated ${result.modifiedCount} objects in collection ${collectionName}`)
     return result
@@ -208,15 +190,8 @@ class MongoDatabase {
     // await this.ensureConnected()
 
     const collection = this.collection(collectionName)
-    let result = await new Promise((resolve, reject) => {
-      collection.remove(query, (err: Error, result: any) => {
-        if (err) {
-          reject(err)
-        }
+    let result = await collection.remove(query)
 
-        resolve(result)
-      })
-    })
     logger.info(`Deleted ${result.deletedCount} objects in collection ${collectionName}`)
 
     return result
