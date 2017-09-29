@@ -30,7 +30,9 @@ export const addStudentToCourse = {
     source: any,
     args: { courseName: string, studentEmail: string }
   ) => {
-    return Course.addStudent(args.courseName, args.studentEmail)
+    
+    let course = await Course.findOne({name: args.courseName})
+    return await course.addStudent({email: args.studentEmail})
   }
 }
 
@@ -44,7 +46,8 @@ export const removeStudentFromCourse = {
     source: any,
     args: { courseName: string, studentEmail: string }
   ) => {
-    return Course.removeStudent(args.courseName, args.studentEmail)
+    let course = await Course.findOne({name: args.courseName})
+    return await course.removeStudent({email: args.studentEmail})
   }
 }
 

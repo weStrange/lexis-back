@@ -87,5 +87,17 @@ const courseSchema = new mongoose.Schema({
   },
   difficulty: String
 })
+courseSchema.methods.removeStudent = async function(email, cb) {
+  let user = await mongoose.model('User').findOne({ email })
+  user.courses = user.courses.filter(c => c.name === this.name)
+  this.students = this.students.filter(s => s.email !== email)
+  return Promise.all([this.save(), user.save()])
+}
+courseSchema.methods.addStudent = async function(email, cb) {
+  let user = await mongoose.model('User').findOne({ email })
+  user.courses.push(this.name)
+  this.students.push(user.email)
+  return Promise.all([this.save(), user.save()])
+}
 
 export default mongoose.model('Course', courseSchema)
