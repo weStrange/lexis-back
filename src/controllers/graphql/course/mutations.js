@@ -9,7 +9,7 @@ import {
   GraphQLInt
 } from 'graphql'
 
-import CourseModel from '../../../models/Course'
+import { Course } from '~/models/'
 
 import {
   courseType,
@@ -18,7 +18,7 @@ import {
   AchievementTypeEnum
 } from './types'
 
-import type { CourseInsertPayload } from '../../../types'
+import type { CourseInsertPayload } from '~/types'
 
 export const addStudentToCourse = {
   type: GraphQLBoolean,
@@ -30,7 +30,9 @@ export const addStudentToCourse = {
     source: any,
     args: { courseName: string, studentEmail: string }
   ) => {
-    return CourseModel.addStudent(args.courseName, args.studentEmail)
+    
+    let course = await Course.findOne({name: args.courseName})
+    return await course.addStudent({email: args.studentEmail})
   }
 }
 
@@ -44,7 +46,8 @@ export const removeStudentFromCourse = {
     source: any,
     args: { courseName: string, studentEmail: string }
   ) => {
-    return CourseModel.removeStudent(args.courseName, args.studentEmail)
+    let course = await Course.findOne({name: args.courseName})
+    return await course.removeStudent({email: args.studentEmail})
   }
 }
 
@@ -59,7 +62,7 @@ export const addCourse = {
     students: { type: new GraphQLList(GraphQLString) }
   },
   resolve: async (source: any, args: CourseInsertPayload) => {
-    return (await CourseModel.insert(args)).serialize()
+    return (await Course.create(args)).toJSON()
   }
 }
 
@@ -75,7 +78,7 @@ export const updateCourse = {
     students: { type: new GraphQLList(GraphQLString) }
   },
   resolve: async (source: any, args: any) => {
-    return CourseModel.update({ id: args.id }, args)
+    return Course.update({ id: args.id }, args)
   }
 }
 
@@ -85,6 +88,7 @@ export const deleteCourse = {
     id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve: async (source: any, args: { id: string }) => {
-    return CourseModel.delete({ id: args.id })
+    let course = await Course.findOne({ id: args.id })
+    return await course.remove()
   }
 }

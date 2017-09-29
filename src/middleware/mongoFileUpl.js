@@ -1,6 +1,6 @@
 // @flow
 
-import Avatar from '../models/Avatar'
+import { Avatar } from '~/models/'
 
 export default async (ctx: any, next: Function) => {
   if (ctx.request.is('multipart/form-data')) {
@@ -20,7 +20,7 @@ export default async (ctx: any, next: Function) => {
     if (foundAvatar) {
       await Avatar.update({ email }, avatarMutation)
     } else {
-      await Avatar.insert(avatarMutation)
+      await Avatar.create(avatarMutation)
     }
 
     operations.variables.avatarUrl = 'img/' + email

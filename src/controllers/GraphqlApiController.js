@@ -8,7 +8,7 @@ import multer from 'koa-multer'
 import { graphqlKoa, graphiqlKoa } from 'apollo-server-koa'
 
 import schema from './graphql/schema'
-import mongoFileUpl from '../middleware/mongoFileUpl'
+import mongoFileUpl from '~/middleware/mongoFileUpl'
 // import { makeExecutableSchema } from 'graphql-tools'
 
 const upload = multer({ storage: multer.memoryStorage() })

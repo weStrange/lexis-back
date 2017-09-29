@@ -1,7 +1,7 @@
 /* @flow */
 'use strict'
 
-import controllers from '../controllers'
+import controllers from '~/controllers'
 import koaRouter from 'koa-router'
 import logger from 'winston'
 

@@ -5,7 +5,7 @@ import passport from 'koa-passport'
 import dotenv from 'dotenv'
 import passportLocal from 'passport-local'
 
-import User from '../models/User'
+import { User } from '~/models/'
 import { validatePassword } from './oauth'
 
 dotenv.config()
