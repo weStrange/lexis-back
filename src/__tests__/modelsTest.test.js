@@ -2,22 +2,26 @@
 'use strict'
 
 import dotenv from 'dotenv'
-import chai from 'chai'
+// import chai from 'chai'
 import logger from 'winston'
 
 import { User } from '~/models/'
+import database from '~/models/MongoDatabase'
 
 dotenv.config()
 
-let expect = chai.expect
+// let expect = chai.expect
 
 describe('User model:', async function () {
+  beforeAll(async function () {
+    User.collection.drop()
+  })
   // const User = models.User
   // logger.info(`Testing user model. Database ${User.getDb().url} and collection ${User.getCollectionName()}`)
   it('tests whether connection works', async function () {
     await User.find({email: 'nopestitynopes'}) // this will create the collection implicitly
     const count = await User.count()
-    expect(count).to.equal(0)
+    expect(count).toEqual(0)
   })
   it('inserts a user into the database', async function () {
     let result = await User.create(
@@ -30,7 +34,7 @@ describe('User model:', async function () {
         salt: 'test'
       }
     )
-    expect(result.email).to.equal('example@example.com')
+    expect(result.email).toEqual('example@example.com')
   })
   it('inserts multiple users into the database', async function () {
     let result1 = await User.create(
@@ -63,41 +67,29 @@ describe('User model:', async function () {
         salt: 'test'
       }
     )
-    expect(result1.email).to.equal('example1@example.com')
-    expect(result2.email).to.equal('example2@example.com')
-    expect(result3.email).to.equal('example3@example.com')
+    expect(result1.email).toEqual('example1@example.com')
+    expect(result2.email).toEqual('example2@example.com')
+    expect(result3.email).toEqual('example3@example.com')
   })
   it('updates users in the database', async function () {
     let updatedCount = await User.update(
       {email: 'example1@example.com'},
-      {firstName: 'Penny'},
-      {
-        email: 'example1@example.com',
-        hash: 'test',
-        salt: 'test'
-      }
-    )
-    expect(updatedCount).to.equal(1)
+      {firstName: 'Penny'}
+    ).count()
+    expect(updatedCount).toEqual(1)
+    
     let mrNode = await User.findOne({email: 'example2@example.com'})
-    expect(mrNode).not.to.equal(null)
+    expect(mrNode).not.toEqual(null)
     if (mrNode !== null) {
       mrNode.lastName = 'mrNode'
-      await User.update(
-        {email: 'example2@example.com'},
-        mrNode,
-        {
-          email: 'example2@example.com',
-          hash: 'test',
-          salt: 'test'
-        }
-      )
+      await mrNode.save()
 
-      mrNode = (await User.find({lastName: 'mrNode'})).first()
-      expect(mrNode.lastName).to.equal('mrNode')
+      mrNode = await User.findOne({lastName: 'mrNode'})
+      expect(mrNode.lastName).toEqual('mrNode')
     }
 
     let penny = await User.findOne({firstName: 'Penny'})
-    expect(penny.firstName).to.equal('Penny')
+    expect(penny.firstName).toEqual('Penny')
   })
   it('finds many users from the database', async function () {
     let usersWithLasName = await User.find({lastName: { '$exists': true }})
@@ -108,14 +100,14 @@ describe('User model:', async function () {
     expect(allUsers.toArray()).to.have.length(4)
     await User.delete({ email: 'example@example.com' }) // delete one using instance method
     let count = await User.count()
-    expect(count).to.equal(3)
+    expect(count).toEqual(3)
     let deletedCount = await User.delete({email: 'example1@example.com'})// delete a user using static method
-    expect(deletedCount).to.equal(1)
+    expect(deletedCount).toEqual(1)
     count = await User.count()
-    expect(count).to.equal(2)
+    expect(count).toEqual(2)
     await User.delete() // delete the rest
     count = await User.count()
-    expect(count).to.equal(0)
+    expect(count).toEqual(0)
     // in general you should avoid using anything database-specific outside of the models folder
     // but we are doing it for testing here, so this can be an exception
     await User.collection.drop()

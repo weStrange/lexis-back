@@ -23,9 +23,12 @@ export const uploadPicture = {
 
     // let userMutation = { ...theUser, avatarUrl }
 
-    const updateResult = await User.update({ email }, args)
-    const userMutation = await User.findOne({ email })
+    // const updateResult = await User.update({ email }, args)
+    // if (updateResult) return userMutation
+    
+    let user = await User.findOne({ email })
+    user.avatarUrl = avatarUrl
 
-    if (updateResult) return userMutation
+    return await user.save()
   }
 }

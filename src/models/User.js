@@ -31,7 +31,8 @@ var userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    required: true
+    required: true,
+    default: 'Student'
   },
   avatarUrl: {
     type: String,
@@ -39,7 +40,8 @@ var userSchema = new mongoose.Schema({
   },
   course: {
     type: [String],
-    require: true
+    require: true,
+    default: []
   },
   hash: String,
   salt: String

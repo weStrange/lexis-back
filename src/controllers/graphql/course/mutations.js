@@ -85,6 +85,7 @@ export const deleteCourse = {
     id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve: async (source: any, args: { id: string }) => {
-    return Course.delete({ id: args.id })
+    let course = await Course.findOne({ id: args.id })
+    return await course.remove()
   }
 }

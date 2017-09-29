@@ -44,18 +44,15 @@ export const addUser = {
     source: any,
     args: AddUserArgs
   ) => {
-    let newUser = Utils.stripPassword({
-      ...args,
+    let newUser = {
+      ...Utils.stripPassword(args),
       registrationDate: (new Date()).toISOString(),
       courses: [],
-      avatarUrl: args.avatarUrl || null
-    })
-    let creds = {
-      email: args.email,
+      avatarUrl: args.avatarUrl || null,
       ...getHashAndSalt(args.password)
     }
 
-    return User.create(newUser, creds)
+    return User.create(newUser)
   }
 }
 
@@ -80,10 +77,7 @@ export const deleteUser = {
     email: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve: async (source: any, args: { email: string }) => {
-    let theUser = await User.findOne(args)
-
-    User.delete(args)
-
-    return theUser
+    let user = await User.findOne(args)
+    return await user.remove()
   }
 }
