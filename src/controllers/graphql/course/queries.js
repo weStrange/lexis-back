@@ -6,11 +6,11 @@ import {
   GraphQLList
 } from 'graphql'
 
-import CourseModel from '../../../models/Course'
+import { Course } from '~/models/'
 
 import { courseType, Difficulty } from './types'
 
-import type { CourseQueryPayload } from '../../../types'
+import type { CourseQueryPayload } from '~/types'
 
 export const course = {
   type: new GraphQLList(courseType),
@@ -22,8 +22,8 @@ export const course = {
     difficulty: { type: Difficulty }
   },
   resolve: async (source: any, args: CourseQueryPayload) => {
-    let foundCourses = (await CourseModel.find(args))
+    let foundCourses = (await Course.find(args))
 
-    return (await foundCourses).map((p) => p.serialize())
+    return (await foundCourses).map((p) => p.toJSON())
   }
 }

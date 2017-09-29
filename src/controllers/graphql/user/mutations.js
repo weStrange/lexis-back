@@ -11,12 +11,12 @@ import {
 
 import { userType, Gender, Role } from './types'
 
-import UserModel from '../../../models/User'
-import Utils from '../../../utils'
+import { User } from '~/models/'
+import Utils from '~/utils'
 
-import { getHashAndSalt } from '../../../auth/oauth'
+import { getHashAndSalt } from '~/auth/oauth'
 
-import type { Gender as GenderType, Role as RoleType } from '../../../types'
+import type { Gender as GenderType, Role as RoleType } from '~/types'
 
 type AddUserArgs = {
   email: string,
@@ -55,7 +55,7 @@ export const addUser = {
       ...getHashAndSalt(args.password)
     }
 
-    return UserModel.insert(newUser, creds)
+    return User.create(newUser, creds)
   }
 }
 
@@ -69,9 +69,9 @@ export const updateUser = {
     gender: { type: Gender },
     role: { type: Role }
   },
-  resolve: async (source: any, args: any) => {
-    return UserModel.update({ email: args.email }, args)
-  }
+  resolve: (source: any, args: any) => (
+    User.update({ email: args.email }, args)
+  )
 }
 
 export const deleteUser = {
@@ -80,9 +80,9 @@ export const deleteUser = {
     email: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve: async (source: any, args: { email: string }) => {
-    let theUser = await UserModel.findOne(args)
+    let theUser = await User.findOne(args)
 
-    UserModel.delete(args)
+    User.delete(args)
 
     return theUser
   }

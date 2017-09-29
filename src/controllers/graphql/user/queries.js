@@ -7,16 +7,14 @@ import {
 
 import { userType } from './types'
 
-import UserModel from '../../../models/User'
+import { User } from '~/models/'
 
 export const user = {
   type: userType,
   args: {
     email: { type: GraphQLString }
   },
-  resolve: async (source: any, args: { email: string }) => {
-    let foundUser = (await UserModel.findOne({ email: args.email }))
-
-    return foundUser
-  }
+  resolve: (source: any, args: { email: string }) => (
+    User.findOne({ email: args.email })
+  )
 }

@@ -11,6 +11,7 @@ import dotenv from 'dotenv'
 import passport from './auth/passport'
 import configureAuth from './middleware/authenticate'
 import configureRouting from './middleware/routing'
+import database from './models/MongoDatabase'
 
 if (module.hot) {
   // $FlowIgnore

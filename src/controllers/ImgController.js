@@ -2,7 +2,7 @@
 'use strict'
 
 import configureApiController from './ApiController'
-import Avatar from '../models/Avatar'
+import { Avatar } from '~/models/'
 
 export default function configureUserApiController (router: any) {
   configureApiController(router)

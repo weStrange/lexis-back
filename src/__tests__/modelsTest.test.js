@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 import chai from 'chai'
 import logger from 'winston'
 
-import User from '../models/User'
+import { User } from '~/models/'
 
 dotenv.config()
 
@@ -13,22 +13,19 @@ let expect = chai.expect
 
 describe('User model:', async function () {
   // const User = models.User
-  logger.info(`Testing user model. Database ${User.getDb().url} and collection ${User.getCollectionName()}`)
+  // logger.info(`Testing user model. Database ${User.getDb().url} and collection ${User.getCollectionName()}`)
   it('tests whether connection works', async function () {
     await User.find({email: 'nopestitynopes'}) // this will create the collection implicitly
-    const count = await User.getDb().collection(User.getCollectionName()).count()
+    const count = await User.count()
     expect(count).to.equal(0)
   })
   it('inserts a user into the database', async function () {
-    let result = await User.insert(
+    let result = await User.create(
       {
         email: 'example@example.com',
         firstName: 'test',
         lastName: 'test',
-        registrationDate: new Date().toISOString()
-      },
-      {
-        email: 'example@example.com',
+        registrationDate: new Date().toISOString(),
         hash: 'test',
         salt: 'test'
       }
@@ -36,41 +33,32 @@ describe('User model:', async function () {
     expect(result.email).to.equal('example@example.com')
   })
   it('inserts multiple users into the database', async function () {
-    let result1 = await User.insert(
+    let result1 = await User.create(
       {
         email: 'example1@example.com',
         firstName: 'test',
         lastName: 'test',
-        registrationDate: new Date().toISOString()
-      },
-      {
-        email: 'example1@example.com',
+        registrationDate: new Date().toISOString(),
         hash: 'test',
         salt: 'test'
       }
     )
-    let result2 = await User.insert(
+    let result2 = await User.create(
       {
         email: 'example2@example.com',
         firstName: 'test',
         lastName: 'test',
-        registrationDate: new Date().toISOString()
-      },
-      {
-        email: 'example2@example.com',
+        registrationDate: new Date().toISOString(),
         hash: 'test',
         salt: 'test'
       }
     )
-    let result3 = await User.insert(
+    let result3 = await User.create(
       {
         email: 'example3@example.com',
         firstName: 'test',
         lastName: 'test',
-        registrationDate: new Date().toISOString()
-      },
-      {
-        email: 'example3@example.com',
+        registrationDate: new Date().toISOString(),
         hash: 'test',
         salt: 'test'
       }
@@ -130,7 +118,7 @@ describe('User model:', async function () {
     expect(count).to.equal(0)
     // in general you should avoid using anything database-specific outside of the models folder
     // but we are doing it for testing here, so this can be an exception
-    await User.getDb().dropCollection(User.getCollectionName())
+    await User.collection.drop()
   })
 })
 /* Test associations between user and comment

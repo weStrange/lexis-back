@@ -6,7 +6,7 @@ import {
   GraphQLString
 } from 'graphql'
 
-import UserModel from '../../../models/User'
+import { User } from '~/models/'
 
 import { userType } from '../user/types'
 
@@ -19,12 +19,12 @@ export const uploadPicture = {
   resolve: async (source: any, args: any) => {
     let { email, avatarUrl } = args
 
-    // let theUser = await UserModel.findOne({ email })
+    // let theUser = await User.findOne({ email })
 
     // let userMutation = { ...theUser, avatarUrl }
 
-    const updateResult = await UserModel.update({ email }, args)
-    const userMutation = await UserModel.findOne({ email })
+    const updateResult = await User.update({ email }, args)
+    const userMutation = await User.findOne({ email })
 
     if (updateResult) return userMutation
   }

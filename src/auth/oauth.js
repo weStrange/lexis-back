@@ -5,9 +5,9 @@ import jwt from 'jsonwebtoken'
 import promisify from 'es6-promisify'
 import crypto from 'crypto'
 
-import config from '../config'
+import config from '~/config'
 
-import type { InputCreds } from '../types'
+// import type { InputCreds } from '~/types'
 
 // const redis = createClient()
 // const redisSetexAsync = promisify(redis.setex, redis)

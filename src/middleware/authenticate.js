@@ -3,17 +3,17 @@
 
 import getRouter from 'koa-router'
 
-import passport from '../auth/passport'
-import { generateTokens, getHashAndSalt } from '../auth/oauth'
+import passport from '~/auth/passport'
+import { generateTokens, getHashAndSalt } from '~/auth/oauth'
 
-import User from '../models/User'
-import Utils from '../utils'
+import { User } from '~/models/'
+import Utils from '~/utils'
 
 import type {
   InputCreds,
   User as UserType,
   Credentials
-} from '../types'
+} from '~/types'
 
 if (module.hot) {
   // $FlowIgnore
@@ -58,17 +58,14 @@ async function registrationHandler (ctx, next) {
 
   let newUser: UserType = {
     ...Utils.stripCreds(payload),
-    registrationDate: (new Date()).toISOString()
-  }
-  let creds: Credentials = {
-    email: payload.email,
+    registrationDate: (new Date()).toISOString(),
     ...getHashAndSalt(payload.password)
   }
 
   if (!(await User.findOne({ email: payload.email }))) {
-    let result = await User.insert(newUser, creds)
+    let result = await User.create(newUser)
 
-    ctx.body = result.serialize()
+    ctx.body = result.toJSON()
   }
 
   return next()
