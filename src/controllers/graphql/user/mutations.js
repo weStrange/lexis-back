@@ -45,9 +45,11 @@ export const addUser = {
     args: AddUserArgs
   ) => {
     let newUser = {
-      ...Utils.stripPassword(args),
-      registrationDate: (new Date()).toISOString(),
-      courses: [],
+      ...Utils.stripPassword({
+        ...args,
+        registrationDate: (new Date()).toISOString(),
+        courses: []
+      }),
       avatarUrl: args.avatarUrl || null,
       ...getHashAndSalt(args.password)
     }
