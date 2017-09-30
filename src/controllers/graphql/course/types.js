@@ -10,46 +10,13 @@ import {
   GraphQLInputObjectType
 } from 'graphql'
 
-const exerciseInputType = new GraphQLInputObjectType({
-  name: 'ExerciseInput',
-  fields: {
-    name: { type: new GraphQLNonNull(GraphQLString) },
-    data: { type: new GraphQLNonNull(GraphQLString) }
-  }
-})
-
-const exerciseType = new GraphQLObjectType({
-  name: 'Exercise',
-  fields: {
-    id: { type: new GraphQLNonNull(GraphQLString) },
-    name: { type: new GraphQLNonNull(GraphQLString) },
-    data: { type: new GraphQLNonNull(GraphQLString) }
-  }
-})
-
-const lessonInputType = new GraphQLInputObjectType({
-  name: 'LessonInput',
-  fields: {
-    name: { type: new GraphQLNonNull(GraphQLString) },
-    exercises: { type: new GraphQLList(exerciseInputType) }
-  }
-})
-
-const lessonType = new GraphQLObjectType({
-  name: 'Lesson',
-  fields: {
-    id: { type: new GraphQLNonNull(GraphQLString) },
-    name: { type: new GraphQLNonNull(GraphQLString) },
-    exercises: { type: new GraphQLList(exerciseType) }
-  }
-})
-
 export const levelInputType = new GraphQLInputObjectType({
   name: 'LevelInput',
   fields: {
     name: { type: new GraphQLNonNull(GraphQLString) },
     description: { type: new GraphQLNonNull(GraphQLString) },
-    lessons: { type: new GraphQLList(lessonInputType) }
+    lessons: { type: GraphQLString },
+    imageUrl: { type: GraphQLString }
   }
 })
 
@@ -59,7 +26,8 @@ export const levelType = new GraphQLObjectType({
     id: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     description: { type: new GraphQLNonNull(GraphQLString) },
-    lessons: { type: new GraphQLList(lessonType) }
+    lessons: { type: GraphQLString },
+    imageUrl: { type: GraphQLString }
   }
 })
 

@@ -3,27 +3,6 @@
 
 import mongoose from 'mongoose'
 
-const exerciseSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
-  },
-  data: {
-    type: String,
-    required: true
-  }
-})
-
-const lessonSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
-  },
-  exercises: {
-    type: [exerciseSchema]
-  }
-})
-
 const levelSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -33,11 +12,13 @@ const levelSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  // this is just s tring JSON that is only handled on the front-end
   lessons: {
-    type: [lessonSchema]
+    type: String,
+    default: '[]'
   },
-  image: {
-    type: Buffer
+  imageUrl: {
+    type: String
   }
 })
 
