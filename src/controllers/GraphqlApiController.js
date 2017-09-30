@@ -16,7 +16,7 @@ const upload = multer({ storage: multer.memoryStorage() })
 export default function configureUserApiController (router: any) {
   configureApiController(router)
   router.post('/graphql',
-    upload.single('variables.avatar'),
+    upload.single('variables.image'),
     mongoFileUpl,
     koaBody(),
     graphqlKoa({ schema }))
