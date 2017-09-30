@@ -1,29 +1,29 @@
-// @flow
+/* @flow */
 
-import { Avatar } from '~/models/'
+import { Image } from '~/models/'
 
 export default async (ctx: any, next: Function) => {
   if (ctx.request.is('multipart/form-data')) {
     const operations = JSON.parse(ctx.req.body.operations)
-    const { email } = operations.variables
+    const { imageId } = operations.variables
 
-    const avatarMutation = {
-      email,
+    const imageMutation = {
+      imageId,
       img: ctx.req.file.buffer,
       mimetype: ctx.req.file.mimetype
     }
 
-    console.log(avatarMutation)
+    console.log(imageMutation)
 
-    const foundAvatar = await Avatar.findOne({ email })
+    const foundImage = await Image.findById(imageId)
 
-    if (foundAvatar) {
-      await Avatar.update({ email }, avatarMutation)
+    if (foundImage) {
+      await Image.findByIdAndUpdate(imageId, imageMutation)
     } else {
-      await Avatar.create(avatarMutation)
+      await Image.create(imageMutation)
     }
 
-    operations.variables.avatarUrl = 'img/' + email
+    operations.variables.imageUrl = 'img/' + imageId
 
     ctx.request.body = operations
   }

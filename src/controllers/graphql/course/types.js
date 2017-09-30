@@ -70,6 +70,7 @@ export const courseType = new GraphQLObjectType({
     students: { type: new GraphQLList(GraphQLString) },
     levels: { type: new GraphQLList(levelType) },
     achievements: { type: new GraphQLList(achievementType) },
-    difficulty: { type: new GraphQLNonNull(Difficulty) }
+    difficulty: { type: new GraphQLNonNull(Difficulty) },
+    imageUrl: { type: GraphQLString }
   })
 })
