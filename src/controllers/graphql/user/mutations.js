@@ -59,17 +59,18 @@ export const addUser = {
 }
 
 export const updateUser = {
-  type: GraphQLInt,
+  type: userType,
   args: {
     email: { type: GraphQLString }, // as identifier
     firstName: { type: GraphQLString },
     lastName: { type: GraphQLString },
     birthday: { type: GraphQLString },
     gender: { type: Gender },
+    avatarUrl: { type: GraphQLString },
     role: { type: Role }
   },
   resolve: (source: any, args: any) => (
-    User.update({ email: args.email }, args)
+    User.findOneAndUpdate({ email: args.email }, args)
   )
 }
 
@@ -79,7 +80,6 @@ export const deleteUser = {
     email: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve: async (source: any, args: { email: string }) => {
-    let user = await User.findOne(args)
-    return await user.remove()
+    return User.findOneAndRemove(args)
   }
 }

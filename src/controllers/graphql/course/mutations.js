@@ -23,31 +23,31 @@ import type { CourseInsertPayload } from '~/types'
 export const addStudentToCourse = {
   type: GraphQLBoolean,
   args: {
-    courseName: {type: new GraphQLNonNull(GraphQLString)},
+    courseId: {type: new GraphQLNonNull(GraphQLString)},
     studentEmail: {type: new GraphQLNonNull(GraphQLString)}
   },
   resolve: async (
     source: any,
-    args: { courseName: string, studentEmail: string }
+    args: { courseId: string, studentEmail: string }
   ) => {
-    
-    let course = await Course.findOne({name: args.courseName})
-    return await course.addStudent({email: args.studentEmail})
+
+    let course = await Course.findById(args.courseId)
+    return course.addStudent(args.studentEmail)
   }
 }
 
 export const removeStudentFromCourse = {
   type: GraphQLBoolean,
   args: {
-    courseName: {type: new GraphQLNonNull(GraphQLString)},
+    courseId: {type: new GraphQLNonNull(GraphQLString)},
     studentEmail: {type: new GraphQLNonNull(GraphQLString)}
   },
   resolve: async (
     source: any,
-    args: { courseName: string, studentEmail: string }
+    args: { courseId: string, studentEmail: string }
   ) => {
-    let course = await Course.findOne({name: args.courseName})
-    return await course.removeStudent({email: args.studentEmail})
+    let course = await Course.findById(args.courseId)
+    return course.removeStudent(args.studentEmail)
   }
 }
 
@@ -59,15 +59,20 @@ export const addCourse = {
     difficulty: { type: new GraphQLNonNull(Difficulty) },
     levels: { type: new GraphQLList(levelInputType) },
     achievements: { type: new GraphQLList(AchievementTypeEnum) },
-    students: { type: new GraphQLList(GraphQLString) }
+    students: { type: new GraphQLList(GraphQLString) },
+    imageUrl: { type: GraphQLString }
   },
   resolve: async (source: any, args: CourseInsertPayload) => {
-    return (await Course.create(args)).toJSON()
+    return await Course.create({
+      ...args,
+      // TODO: this should be handled by authorization
+      creatorEmail: 'test@test.com'
+    })
   }
 }
 
 export const updateCourse = {
-  type: GraphQLInt,
+  type: courseType,
   args: {
     id: { type: GraphQLString },
     name: { type: GraphQLString },
@@ -75,10 +80,11 @@ export const updateCourse = {
     difficulty: { type: Difficulty },
     levels: { type: new GraphQLList(levelInputType) },
     achievements: { type: new GraphQLList(AchievementTypeEnum) },
-    students: { type: new GraphQLList(GraphQLString) }
+    students: { type: new GraphQLList(GraphQLString) },
+    imageUrl: { type: GraphQLString }
   },
   resolve: async (source: any, args: any) => {
-    return Course.update({ id: args.id }, args)
+    return Course.findOneAndUpdate({ id: args.id }, args)
   }
 }
 
@@ -88,7 +94,6 @@ export const deleteCourse = {
     id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve: async (source: any, args: { id: string }) => {
-    let course = await Course.findOne({ id: args.id })
-    return await course.remove()
+    return Course.findOneAndRemove({ id: args.id })
   }
 }

@@ -3,12 +3,7 @@
 
 import mongoose from 'mongoose'
 
-const avatarSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
+const imageSchema = new mongoose.Schema({
   img: {
     type: Buffer,
     required: false
@@ -19,4 +14,4 @@ const avatarSchema = new mongoose.Schema({
   }
 })
 
-export default mongoose.model('Avatar', avatarSchema)
+export default mongoose.model('Image', imageSchema)

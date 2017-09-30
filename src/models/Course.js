@@ -74,7 +74,8 @@ const courseSchema = new mongoose.Schema({
     required: false
   },
   students: {
-    type: [String]
+    type: [String],
+    default: []
   },
   levels: {
     type: [levelSchema]
@@ -82,20 +83,28 @@ const courseSchema = new mongoose.Schema({
   achievements: {
     type: [achievementSchema]
   },
-  image: {
-    type: Buffer
+  imageUrl: {
+    type: String
   },
   difficulty: String
 })
 courseSchema.methods.removeStudent = async function(email, cb) {
   let user = await mongoose.model('User').findOne({ email })
-  user.courses = user.courses.filter(c => c.name === this.name)
-  this.students = this.students.filter(s => s.email !== email)
+  user.courses = user.courses.filter(c => c !== this._id)
+  this.students = this.students.filter(s => s !== email)
   return Promise.all([this.save(), user.save()])
 }
 courseSchema.methods.addStudent = async function(email, cb) {
   let user = await mongoose.model('User').findOne({ email })
-  user.courses.push(this.name)
+
+  if (
+    user.courses.filter(c => c === this._id).length > 0 ||
+    this.students.filter(s => s === email).length > 0
+  ) {
+    throw new Error('The student already subscribed to the course')
+  }
+
+  user.courses.push(this._id)
   this.students.push(user.email)
   return Promise.all([this.save(), user.save()])
 }

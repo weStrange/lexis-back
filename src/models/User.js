@@ -25,10 +25,6 @@ var userSchema = new mongoose.Schema({
   },
   birthday: Date,
   gender: String,
-  avatar: {
-    type: String,
-    required: false
-  },
   role: {
     type: String,
     required: true,
@@ -38,9 +34,8 @@ var userSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  course: {
+  courses: {
     type: [String],
-    require: true,
     default: []
   },
   hash: String,

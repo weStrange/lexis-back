@@ -22,8 +22,6 @@ export const course = {
     difficulty: { type: Difficulty }
   },
   resolve: async (source: any, args: CourseQueryPayload) => {
-    let foundCourses = (await Course.find(args))
-
-    return (await foundCourses).map((p) => p.toJSON())
+    return Course.find(args)
   }
 }
