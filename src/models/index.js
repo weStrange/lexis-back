@@ -1,5 +1,5 @@
 import User from './User'
-import Avatar from './Avatar'
+import Image from './Image'
 import Course from './Course'
 
-export { User, Avatar, Course }
+export { User, Image, Course }

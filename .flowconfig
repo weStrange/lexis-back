@@ -8,6 +8,7 @@
 flow
 [options]
 
+module.name_mapper='~'->'<PROJECT_ROOT>/src'
 suppress_type=$FlowFixMe
 suppress_type=$FlowIssue
 suppress_comment= \\(.\\|\n\\)*\\$FlowIgnore

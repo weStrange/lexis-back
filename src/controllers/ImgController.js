@@ -2,18 +2,18 @@
 'use strict'
 
 import configureApiController from './ApiController'
-import { Avatar } from '~/models/'
+import { Image } from '~/models/'
 
 export default function configureUserApiController (router: any) {
   configureApiController(router)
 
-  router.get('/img/:email', async ctx => {
-    let foundAvatar = (await Avatar.findOne({ email: ctx.params.email }))
+  router.get('/img/:imgId', async ctx => {
+    let foundImage = (await Image.findById(ctx.params.imgId))
 
-    if (foundAvatar) {
-      console.log(foundAvatar)
-      ctx.type = foundAvatar.mimetype
-      ctx.body = foundAvatar.img
+    if (foundImage) {
+      console.log(foundImage)
+      ctx.type = foundImage.mimetype
+      ctx.body = foundImage.img
     }
     //
     // console.log(foundAvatar)

@@ -77,7 +77,7 @@ describe('User model:', async function () {
       {firstName: 'Penny'}
     ).count()
     expect(updatedCount).toEqual(1)
-    
+
     let mrNode = await User.findOne({email: 'example2@example.com'})
     expect(mrNode).not.toEqual(null)
     if (mrNode !== null) {

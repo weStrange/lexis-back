@@ -5,7 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLString
 } from 'graphql'
-
+/*
 import { User } from '~/models/'
 
 import { userType } from '../user/types'
@@ -25,10 +25,11 @@ export const uploadPicture = {
 
     // const updateResult = await User.update({ email }, args)
     // if (updateResult) return userMutation
-    
+
     let user = await User.findOne({ email })
     user.avatarUrl = avatarUrl
 
     return await user.save()
   }
 }
+*/

@@ -10,7 +10,7 @@ import * as userMutations from './user/mutations'
 import * as userQueries from './user/queries'
 import * as courseMutations from './course/mutations'
 import * as courseQueries from './course/queries'
-import * as avatarMutations from './avatar/mutations'
+// import * as avatarMutations from './avatar/mutations'
 
 const queryType = new GraphQLObjectType({
   name: 'Query',
@@ -27,7 +27,7 @@ const mutationType = new GraphQLObjectType({
   fields: {
     ...userMutations,
     ...courseMutations,
-    ...avatarMutations
+    // ...avatarMutations
   }
 })
 
