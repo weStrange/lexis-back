@@ -73,8 +73,8 @@
   },
   "scripts": {
     "start": "yarn run babel src/ -- src/ -d dist/ && node dist/index.js",
-    "test": "standard && flow && jest",
-    "test-start": "jest"
+    "test": "jest",
+    "test-full": "standard && flow && jest"
   },
   "jest": {
     "testPathIgnorePatterns": [
