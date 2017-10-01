@@ -25,10 +25,7 @@ export const course = {
     let query = {}
     for (let key in args) {
       if (args[key] !== undefined && key !== 'id')  {
-        query = {
-          ...query,
-          key: args[key]
-        }
+        query[key] = args[key]
       }
     }
 
