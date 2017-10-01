@@ -42,3 +42,13 @@ export const course = {
     return Course.find(query)
   }
 }
+
+export const courses = {
+  type: new GraphQLList(courseType),
+  args: {
+    ids: { type: new GraphQLList(GraphQLString) }
+  },
+  resolve: (source: any, args: { ids: Array<string> }) => (
+    Course.find({ _id: { $in: args.ids } })
+  )
+}

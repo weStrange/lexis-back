@@ -18,10 +18,10 @@ export default async (ctx: any, next: Function) => {
 
     if (foundImage) {
       await Image.findByIdAndUpdate(imageId, imageMutation)
-      operations.variables.imageUrl = 'img/' + imageId
+      operations.variables.imageUrl = '/img/' + imageId
     } else {
       let newImage = await Image.create(imageMutation)
-      operations.variables.imageUrl = 'img/' + newImage._id
+      operations.variables.imageUrl = '/img/' + newImage._id
     }
 
     ctx.request.body = operations
