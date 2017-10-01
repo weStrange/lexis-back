@@ -10,6 +10,8 @@ import {
   GraphQLInputObjectType
 } from 'graphql'
 
+import { userType } from '../user/types'
+
 export const levelInputType = new GraphQLInputObjectType({
   name: 'LevelInput',
   fields: {
@@ -67,7 +69,7 @@ export const courseType = new GraphQLObjectType({
     creatorEmail: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     description: { type: new GraphQLNonNull(GraphQLString) },
-    students: { type: new GraphQLList(GraphQLString) },
+    students: { type: new GraphQLList(userType) },
     levels: { type: new GraphQLList(levelType) },
     achievements: { type: new GraphQLList(achievementType) },
     difficulty: { type: new GraphQLNonNull(Difficulty) },

@@ -22,6 +22,23 @@ export const course = {
     difficulty: { type: Difficulty }
   },
   resolve: async (source: any, args: CourseQueryPayload) => {
-    return Course.find(args)
+    let query = {}
+    for (let key in args) {
+      if (args[key] !== undefined && key !== 'id')  {
+        query = {
+          ...query,
+          key: args[key]
+        }
+      }
+    }
+
+    if (args.id) {
+      query = {
+        ...query,
+        _id: args.id
+      }
+    }
+    console.log(query, args)
+    return Course.find(query)
   }
 }
