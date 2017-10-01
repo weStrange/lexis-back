@@ -25,7 +25,6 @@ export const levelInputType = new GraphQLInputObjectType({
 export const levelType = new GraphQLObjectType({
   name: 'Level',
   fields: {
-    id: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     description: { type: new GraphQLNonNull(GraphQLString) },
     lessons: { type: GraphQLString },
