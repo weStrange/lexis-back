@@ -74,7 +74,7 @@ export const addCourse = {
 export const updateCourse = {
   type: courseType,
   args: {
-    id: { type: GraphQLString },
+    id: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: GraphQLString },
     description: { type: GraphQLString },
     difficulty: { type: Difficulty },
@@ -84,7 +84,7 @@ export const updateCourse = {
     imageUrl: { type: GraphQLString }
   },
   resolve: async (source: any, args: any) => {
-    return Course.findOneAndUpdate({ id: args.id }, args)
+    return Course.findOneAndUpdate({ _id: args.id }, args)
   }
 }
 
@@ -94,6 +94,6 @@ export const deleteCourse = {
     id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve: async (source: any, args: { id: string }) => {
-    return Course.findOneAndRemove({ id: args.id })
+    return Course.findOneAndRemove({ _id: args.id })
   }
 }
