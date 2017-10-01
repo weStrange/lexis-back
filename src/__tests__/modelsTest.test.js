@@ -12,7 +12,7 @@ import database from '~/models/MongoDatabase'
 
 // let expect = chai.expect
 
-describe('User model:', async function () {
+describe('User model:', function () {
   beforeAll(async function () {
     await User.collection.drop()
     try {
@@ -22,8 +22,8 @@ describe('User model:', async function () {
     }
   })
 
-  afterAll(async function () {
-    await User.collection.drop()
+  afterAll(function () {
+    User.collection.drop().then(() => process.exit())
   })
   // const User = models.User
   // logger.info(`Testing user model. Database ${User.getDb().url} and collection ${User.getCollectionName()}`)
