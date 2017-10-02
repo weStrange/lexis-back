@@ -2,12 +2,11 @@
 "use strict";
 
 import getRouter from "koa-router";
-
+import koaJwt from "koa-jwt";
 import passport from "~/auth/passport";
-// import { generateTokens, getHashAndSalt } from "~/auth/oauth";
-
 import { User } from "~/models/";
 import Utils from "~/utils";
+import config from "~/config";
 
 import type { /* InputCreds, */ User as UserType, Credentials } from "~/types";
 
@@ -33,13 +32,15 @@ const registrationHandler = async (ctx, next) => {
   await next();
 };
 
+export const auth = koaJwt({ secret: config.keys.session });
+
 export default function authenticate() {
-  // authRoutes.post('/login/callback', loginWithRemoteService); //return the token with information received from remote login provider
   authRoutes.post(
     "/login",
     passport.authenticate("local", { session: false }),
     localAuthHandler
   );
+
   authRoutes.post("/register", registrationHandler);
 
   return authRoutes;
