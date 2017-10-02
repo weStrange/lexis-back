@@ -1,80 +1,46 @@
 /* @flow */
-'use strict'
+"use strict";
 
-import getRouter from 'koa-router'
+import getRouter from "koa-router";
 
-import passport from '~/auth/passport'
-import { generateTokens, getHashAndSalt } from '~/auth/oauth'
+import passport from "~/auth/passport";
+// import { generateTokens, getHashAndSalt } from "~/auth/oauth";
 
-import { User } from '~/models/'
-import Utils from '~/utils'
+import { User } from "~/models/";
+import Utils from "~/utils";
 
-import type {
-  InputCreds,
-  User as UserType,
-  Credentials
-} from '~/types'
+import type { /* InputCreds, */ User as UserType, Credentials } from "~/types";
 
-if (module.hot) {
-  // $FlowIgnore
-  module.hot.accept('../auth/oauth', () => {})
-}
+let authRoutes = getRouter();
 
-if (module.hot) {
-  // $FlowIgnore
-  module.hot.accept('../auth/passport', () => {})
-}
+const localAuthHandler = async (ctx, next) => {
+  ctx.body = await ctx.state.user.generateJwt();
+  await next();
+};
 
-let authRoutes = getRouter()
+const registrationHandler = async (ctx, next) => {
+  let payload = ctx.request.body;
+  const { password, ...userInfo } = payload;
+  let newUser = new User(userInfo);
+  newUser.setPassword(payload.password);
 
-function localAuthHandler (ctx: any, next: () => void) {
-  return passport.authenticate('local', async (err, user: InputCreds, info) => {
-    if (err) {
-      ctx.throw(500, err)
-    }
-
-    if (user === false) {
-      ctx.status = 401
-      ctx.body = info.message
-    } else {
-      const { accessToken } = await generateTokens(
-        user,
-        process.env['SESSION_SECRET'] || 'secret'
-      )
-      try {
-        ctx.json({
-          accessToken
-          // refreshToken
-        })
-      } catch (e) {
-        ctx.throw(500, e)
-      }
-    }
-  })(ctx, next)
-}
-
-async function registrationHandler (ctx, next) {
-  let payload = ctx.request.body
-
-  let newUser: UserType = {
-    ...Utils.stripCreds(payload),
-    registrationDate: (new Date()).toISOString(),
-    ...getHashAndSalt(payload.password)
+  if (!await User.findOne({ email: userInfo.email })) {
+    let result = await User.create(newUser);
+    // the toJSON exclude credentials! Check the schema to see what will be passed here
+    ctx.body = result.toJSON();
   }
 
-  if (!(await User.findOne({ email: payload.email }))) {
-    let result = await User.create(newUser)
+  await next();
+};
 
-    ctx.body = result.toJSON()
-  }
-
-  return next()
-}
-
-export default function authenticate () {
+export default function authenticate() {
   // authRoutes.post('/login/callback', loginWithRemoteService); //return the token with information received from remote login provider
-  authRoutes.post('/login', localAuthHandler)
-  authRoutes.post('/register', registrationHandler)
+  authRoutes.post(
+    "/login",
+    passport.authenticate("local", { session: false }),
+    localAuthHandler
+  );
+  authRoutes.post("/register", registrationHandler);
 
-  return authRoutes
+  return authRoutes;
 }

@@ -1,22 +1,21 @@
 /* @flow */
-'use strict'
+"use strict";
 
 module.exports = {
   csrf: {
-    'invalidSessionSecretMessage': 'Invalid session secret',
-    'invalidSessionSecretStatusCode': 403,
-    'invalidTokenMessage': 'Invalid CSRF token',
-    'invalidTokenStatusCode': 403,
-    'excludedMethods': [ 'GET', 'HEAD', 'OPTIONS' ],
-    'disableQuery': false
+    invalidSessionSecretMessage: "Invalid session secret",
+    invalidSessionSecretStatusCode: 403,
+    invalidTokenMessage: "Invalid CSRF token",
+    invalidTokenStatusCode: 403,
+    excludedMethods: ["GET", "HEAD", "OPTIONS"],
+    disableQuery: false
   },
-  auth: {
-    accessTokenTtl: 60 * 5,
-    refreshTokenTtl: 60 * 1
+  jwtConfig: {
+    expiresIn: "7d"
   },
   keys: {
-    session: process.env['SESSION_SECRET'] || 'session-secret'
+    session: process.env["SESSION_SECRET"] || "session-secret"
   },
   appRoot: __dirname,
-  env: process.env['NODE_ENV']
-}
+  env: process.env["NODE_ENV"]
+};
