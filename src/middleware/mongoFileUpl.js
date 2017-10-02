@@ -8,7 +8,6 @@ export default async (ctx: any, next: Function) => {
     const { imageId } = operations.variables
 
     const imageMutation = {
-      imageId,
       img: ctx.req.file.buffer,
       mimetype: ctx.req.file.mimetype
     }
@@ -19,11 +18,11 @@ export default async (ctx: any, next: Function) => {
 
     if (foundImage) {
       await Image.findByIdAndUpdate(imageId, imageMutation)
+      operations.variables.imageUrl = '/img/' + imageId
     } else {
-      await Image.create(imageMutation)
+      let newImage = await Image.create(imageMutation)
+      operations.variables.imageUrl = '/img/' + newImage._id
     }
-
-    operations.variables.imageUrl = 'img/' + imageId
 
     ctx.request.body = operations
   }

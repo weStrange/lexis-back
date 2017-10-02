@@ -76,7 +76,8 @@
     "start": "nodemon --watch dist --delay 1 dist/index.js",
     "test": "standard && flow && jest",
     "test-start": "jest",
-    "compile": "nodemon --watch src node_modules/.bin/babel src/ -- src/ -d dist/"
+    "compile": "nodemon --watch src node_modules/.bin/babel src/ -- src/ -d dist/",
+    "test-full": "standard && flow && jest"
   },
   "jest": {
     "testPathIgnorePatterns": [

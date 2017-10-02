@@ -100,6 +100,7 @@ export type Course = {
 export type CourseQueryPayload = {
   id?: string,
   name?: string,
+  description?: string,
   creatorEmail?: string,
   difficulty?: string
 };

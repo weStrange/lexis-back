@@ -2,7 +2,8 @@
 'use strict'
 
 import {
-  GraphQLString
+  GraphQLString,
+  GraphQLList
 } from 'graphql'
 
 import { userType } from './types'
@@ -16,5 +17,15 @@ export const user = {
   },
   resolve: (source: any, args: { email: string }) => (
     User.findOne({ email: args.email })
+  )
+}
+
+export const users = {
+  type: new GraphQLList(userType),
+  args: {
+    emails: { type: new GraphQLList(GraphQLString) }
+  },
+  resolve: (source: any, args: { emails: Array<string> }) => (
+    User.find({ email: { $in: args.emails } })
   )
 }
