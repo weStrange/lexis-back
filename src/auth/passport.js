@@ -4,38 +4,38 @@
 import passport from 'koa-passport'
 import dotenv from 'dotenv'
 import passportLocal from 'passport-local'
-
 import { User } from '~/models/'
-import { validatePassword } from './oauth'
+// import { validatePassword } from "./oauth";
 
 dotenv.config()
 
 let LocalStrategy = passportLocal.Strategy
 
+passport.serializeUser(function (user, done) {
+  done(null, user)
+})
+
+passport.deserializeUser(function (user, done) {
+  done(null, user)
+})
+
 export default passport.use(
   new LocalStrategy(
-    {usernameField: 'email'},
-    async (email, password, done
-  ) => {
+    { usernameField: 'email' },
+    async (email, password, done) => {
       try {
-        console.log('in strategy', email, password)
-        let creds = await User.findCreds(email)
-        console.log('in strategy', creds)
-        if (creds === undefined || creds === null) {
+        let user = await User.findOne({ email })
+
+        if (!user || !user.validatePassword(password)) {
           return done(null, false, {
-            message: 'Incorrect username.'
+            message: 'Incorrect username or password.'
           })
         }
 
-        // console.log(user)
-        if (!validatePassword(password, creds.hash, creds.salt)) {
-          return done(null, false, {
-            message: 'Incorrect password.'
-          })
-        }
-
-        return done(null, creds)
+        return done(null, user)
       } catch (err) {
         return done(err)
       }
-    }))
+    }
+  )
+)

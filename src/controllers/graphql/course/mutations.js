@@ -23,14 +23,13 @@ import type { CourseInsertPayload } from '~/types'
 export const addStudentToCourse = {
   type: GraphQLBoolean,
   args: {
-    courseId: {type: new GraphQLNonNull(GraphQLString)},
-    studentEmail: {type: new GraphQLNonNull(GraphQLString)}
+    courseId: { type: new GraphQLNonNull(GraphQLString) },
+    studentEmail: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve: async (
     source: any,
     args: { courseId: string, studentEmail: string }
   ) => {
-
     let course = await Course.findById(args.courseId)
     return course.addStudent(args.studentEmail)
   }
@@ -39,8 +38,8 @@ export const addStudentToCourse = {
 export const removeStudentFromCourse = {
   type: GraphQLBoolean,
   args: {
-    courseId: {type: new GraphQLNonNull(GraphQLString)},
-    studentEmail: {type: new GraphQLNonNull(GraphQLString)}
+    courseId: { type: new GraphQLNonNull(GraphQLString) },
+    studentEmail: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve: async (
     source: any,

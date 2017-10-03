@@ -1,10 +1,7 @@
 /* @flow */
 'use strict'
 
-import {
-  GraphQLString,
-  GraphQLList
-} from 'graphql'
+import { GraphQLString, GraphQLList } from 'graphql'
 
 import { userType } from './types'
 
@@ -15,9 +12,8 @@ export const user = {
   args: {
     email: { type: GraphQLString }
   },
-  resolve: (source: any, args: { email: string }) => (
+  resolve: (source: any, args: { email: string }) =>
     User.findOne({ email: args.email })
-  )
 }
 
 export const users = {
@@ -25,7 +21,6 @@ export const users = {
   args: {
     emails: { type: new GraphQLList(GraphQLString) }
   },
-  resolve: (source: any, args: { emails: Array<string> }) => (
+  resolve: (source: any, args: { emails: Array<string> }) =>
     User.find({ email: { $in: args.emails } })
-  )
 }

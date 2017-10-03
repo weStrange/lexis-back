@@ -29,15 +29,16 @@
     "koa-bodyparser": "^4.2.0",
     "koa-convert": "^1.2.0",
     "koa-csrf": "^3.0.6",
-    "koa-jwt": "^3.2.2",
+    "koa-jwt": "2",
     "koa-multer": "^1.0.2",
-    "koa-passport": "^3.0.0",
+    "koa-passport": "^4.0.0",
     "koa-router": "^7.2.1",
     "koa-static": "^4.0.1",
     "koa2-cors": "^2.0.3",
     "mongodb": "^2.2.31",
     "mongoose": "^4.11.11",
     "mongoose-schema-extend": "^0.2.2",
+    "nodemon": "^1.12.1",
     "passport-local": "^1.0.0",
     "redis": "^2.8.0",
     "winston": "^2.3.1"
@@ -55,6 +56,7 @@
     "flow-remove-types": "^1.2.1",
     "graceful-fs": "^4.1.11",
     "jest": "^21.1.0",
+    "prettier-standard": "^7.0.1",
     "server-destroy": "^1.0.1",
     "standard": "^10.0.3"
   },
@@ -72,14 +74,24 @@
     "parser": "babel-eslint"
   },
   "scripts": {
-    "start": "yarn run babel src/ -- src/ -d dist/ && node dist/index.js",
-    "test": "jest",
-    "test-full": "standard && flow && jest"
+    "start": "nodemon --watch dist --delay 1 dist/index.js",
+    "test": "standard && flow && jest",
+    "test-start": "jest",
+    "compile": "nodemon --watch src node_modules/.bin/babel src/ -- src/ -d dist/",
+    "test-full": "standard && flow && jest",
+    "format": "./node_modules/.bin/prettier-standard \"src/**/*.{js,jsx}\"",
+    "precommit": "lint-staged"
   },
   "jest": {
     "testPathIgnorePatterns": [
       "<rootDir>/dist/",
       "<rootDir>/node_modules/"
+    ]
+  },
+  "lint-staged": {
+    "**/src/**/*.{js,jsx,json,css}": [
+      "yarn run format",
+      "git add"
     ]
   }
 }

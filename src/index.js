@@ -1,22 +1,24 @@
 /* @flow */
 'use strict'
 
-import destroyable from 'server-destroy'
 import Koa from 'koa'
 // import bodyParser from 'koa-body'
 // import jwt from 'koa-jwt'
 import logger from 'winston'
 import dotenv from 'dotenv'
+import destroyable from 'server-destroy'
+import koaBody from 'koa-bodyparser'
 
 import passport from './auth/passport'
 import configureAuth from './middleware/authenticate'
 import configureRouting from './middleware/routing'
 import database from './models/MongoDatabase'
+import router from 'koa-router'
 
-if (module.hot) {
-  // $FlowIgnore
-  module.hot.accept('./auth/passport', () => {})
-}
+// if (module.hot) {
+//   // $FlowIgnore
+//   module.hot.accept("./auth/passport", () => {});
+// }
 
 dotenv.config()
 
@@ -28,8 +30,7 @@ logger.add(logger.transports.Console, { level: 'debug', colorize: true })
 
 let authenticate = configureAuth()
 
-// const netLogger = require('./middleware/logger');
-
+// const netLogger = require('./middleware/logger')
 let routing = configureRouting()
 
 const app = new Koa()
@@ -50,7 +51,7 @@ if(config.env !== 'production'){
 // method ctx.json() and ctx.view() and ctx.log as well as renders the final response
 // app.use(responder({appRoot: config.appRoot, app: app}))
 // note: by default multipart requests are not parsed. More info: https://github.com/dlau/koa-body
-// app.use(bodyParser({multipart: true}))
+app.use(koaBody())
 // app.use(netLogger.request());
 // app.use(new CSRF(config.csrf));
 // your authentication middleware
@@ -68,6 +69,7 @@ app.use(authenticate.allowedMethods())
 
 // routing - will call your controllers, etc.
 app.use(routing.routes())
+
 app.use(routing.allowedMethods())
 
 // jwt token verification for any route containing /api/ segment (unless they are GET routes)
@@ -91,7 +93,7 @@ process.on('SIGINT', () => {
 })
 
 // process.on('SIGKILL', () => {
-//   server.destroy()
+//   server.destroy()sss
 // })
 
 logger.info('Application running on port 7000')

@@ -10,35 +10,34 @@ dotenv.config()
 
 const CONNECTION_POOL = {}
 
-let connectionString = process.env['MONGO_USER'] && process.env['MONGO_PASSWORD']
-  ? `mongodb://${process.env['MONGO_USER']}:${process.env['MONGO_PASSWORD']}@${process.env['MONGO_HOST'] || 'localhost'}/lexis`
-  : `mongodb://${process.env['MONGO_HOST'] || 'localhost'}/lexis`
+let connectionString =
+  process.env['MONGO_USER'] && process.env['MONGO_PASSWORD']
+    ? `mongodb://${process.env['MONGO_USER']}:${process.env[
+      'MONGO_PASSWORD'
+    ]}@${process.env['MONGO_HOST'] || 'localhost'}/lexis`
+    : `mongodb://${process.env['MONGO_HOST'] || 'localhost'}/lexis`
 
 class MongoDatabase {
-  db: any;
-  url: string;
+  db: any
+  url: string
 
   constructor (url: string) {
     this.url = url
 
     if (process.platform === 'win32') {
-      const rl = readLine.createInterface({input: process.stdin, output: process.stdout})
+      const rl = readLine.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      })
       rl.on('SIGINT', () => {
         process.emit('SIGINT')
       })
     }
 
-    process.on(
-      'SIGINT',
-      () => this.disconnect(() => process.exit(0))
-    )
-    process.on(
-      'SIGTERM',
-      () => this.disconnect(() => process.exit(0))
-    )
-    process.once(
-      'SIGUSR2',
-      () => this.disconnect(() => process.kill(process.pid, 'SIGUSR2'))
+    process.on('SIGINT', () => this.disconnect(() => process.exit(0)))
+    process.on('SIGTERM', () => this.disconnect(() => process.exit(0)))
+    process.once('SIGUSR2', () =>
+      this.disconnect(() => process.kill(process.pid, 'SIGUSR2'))
     )
   }
 
@@ -56,7 +55,7 @@ class MongoDatabase {
   async disconnect (callback: () => void = () => {}) {
     if (this.db) {
       await this.db.close(() => {
-        console.log('Mongoose disconnected')
+        logger.error('Mongoose disconnected')
         callback()
       })
     }

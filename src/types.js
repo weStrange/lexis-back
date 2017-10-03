@@ -18,13 +18,15 @@ export type User = {
   gender: ?Gender,
   role: Role,
   courses: Array<string>,
-  avatarUrl: ?string
+  avatarUrl: ?string,
+  setPassword: () => void,
+  verifyPassword: (password: string) => boolean,
+  generateJwt: () => any
 }
 
-export type UserWithPassword
-  = User & {
-    password: string
-  }
+export type UserWithPassword = User & {
+  password: string
+}
 
 export type Credentials = {
   email: string,
@@ -37,8 +39,7 @@ export type InputCreds = {
   password: string
 }
 
-export type UserWithCreds =
-  User & {
+export type UserWithCreds = User & {
   hash: string,
   salt: string
 }
@@ -69,8 +70,8 @@ export type Achievement = {
   condition: string
 }
 
-export type CourseDifficulty
-  = 'Beginner'
+export type CourseDifficulty =
+  | 'Beginner'
   | 'Intermediate'
   | 'Upper-intermediate'
   | 'Advanced'
@@ -112,7 +113,7 @@ export type Avatar = {
 
 export type CollectionDataType = User | Course
 
-export type CollectionData
-  = { type: 'user', payload: UserWithCreds }
+export type CollectionData =
+  | { type: 'user', payload: UserWithCreds }
   | { type: 'course', payload: Course }
   | { type: 'avatar', payload: Avatar }

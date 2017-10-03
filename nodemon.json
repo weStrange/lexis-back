@@ -1,0 +1,8 @@
+{
+  "verbose": false,
+  "execMap": {
+    "sh": "bash"
+  },
+  "watch": ["src"],
+  "ext": "js json"
+}
