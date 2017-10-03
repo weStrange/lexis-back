@@ -15,20 +15,24 @@ const RESPONSE_TYPE_GRAPHQL = 'RT_GRAPHQL'
 
 // Renders responses using settings provided
 class Renderer {
-  data: any;
-  type: string;
-  view: any;
+  data: any
+  type: string
+  view: any
 
-  static APP_ROOT: string;
+  static APP_ROOT: string
 
-  constructor (data: any = {}, type: string = RESPONSE_DEFAULT_TYPE, view: any = null) {
+  constructor (
+    data: any = {},
+    type: string = RESPONSE_DEFAULT_TYPE,
+    view: any = null
+  ) {
     this.data = data
     this.type = type
     // this.view = view || 'views/notfound.pug';
     if (!Renderer.APP_ROOT) {
       Renderer.APP_ROOT = '../'
     }
-/*
+    /*
     if(!Renderer.PUG_CONFIG){
       Renderer.PUG_CONFIG = {
         basedir: path.join(Renderer.APP_ROOT, 'views'),
@@ -54,7 +58,7 @@ class Renderer {
         }
       // falls through
       case RESPONSE_TYPE_HTML:
-        // TODO: handle HTML responses here
+      // TODO: handle HTML responses here
       // falls through
       case RESPONSE_TYPE_GRAPHQL:
         break
@@ -65,9 +69,13 @@ class Renderer {
       default:
         ctx.status = ctx.status > 400 ? ctx.status : 500
         if (!this.data) {
-          this.data = { message: `Response type invalid or not supported: ${this.type}. This could mean that an unexpected error has occurred` }
+          this.data = {
+            message: `Response type invalid or not supported: ${this
+              .type}. This could mean that an unexpected error has occurred`
+          }
         }
-        if (ctx.wantsJSON) { // if any of the previous middleware set this flag, use it
+        if (ctx.wantsJSON) {
+          // if any of the previous middleware set this flag, use it
           ctx.body = JSON.stringify(this.data, null, 2)
         } else {
           // TODO: handle html requests here
@@ -89,7 +97,9 @@ class Renderer {
     const otherKeys = Object.keys(other)
     let collision = keys.find(k => otherKeys.includes(k))
     if (collision) {
-      throw new Error(`Collision detected in locals object at key ${collision}. Please check your locals objects`)
+      throw new Error(
+        `Collision detected in locals object at key ${collision}. Please check your locals objects`
+      )
     }
     return Object.assign({}, other, object)
   }
@@ -104,7 +114,11 @@ export default function responder (options: ResponderOptions) {
   const appRoot = options.appRoot
   if (!appRoot) throw new Error(`Please provide appRoot to the responder!`)
   const app = options.app
-  if (!app) throw new Error(`Please give the app reference so we can bootstrap helper methods!`)
+  if (!app) {
+    throw new Error(
+      `Please give the app reference so we can bootstrap helper methods!`
+    )
+  }
   Renderer.setAppRoot(appRoot)
 
   app.context.view = function ctxView (view, locals) {
@@ -124,11 +138,13 @@ export default function responder (options: ResponderOptions) {
   }
 
   app.context.error = function ctxError (data) {
-     // only set the error if it wasn't set previously by something else
+    // only set the error if it wasn't set previously by something else
     if (!this.renderer || this.renderer.type !== RESPONSE_TYPE_ERROR) {
       if (!data.message && !(data instanceof Error)) {
         data.message = 'Unspecified error has occurred'
-        logger.warn(`Error locals do not include any message and is not an instance of Error object. Please try to be specific with the error messages!`)
+        logger.warn(
+          `Error locals do not include any message and is not an instance of Error object. Please try to be specific with the error messages!`
+        )
       }
       this.renderer = new Renderer(data, RESPONSE_TYPE_ERROR)
     }
@@ -144,7 +160,9 @@ export default function responder (options: ResponderOptions) {
       ctx.renderer.render(ctx)
     } catch (error) {
       logger.error(error)
-      ctx.error({ message: `An error has occurred during processing of your request: \n ${error.message}` })
+      ctx.error({
+        message: `An error has occurred during processing of your request: \n ${error.message}`
+      })
     } finally {
       // produce output for user no matter what
       ctx.renderer.render(ctx)

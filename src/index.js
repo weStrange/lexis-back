@@ -1,39 +1,39 @@
 /* @flow */
-"use strict";
+'use strict'
 
-import Koa from "koa";
+import Koa from 'koa'
 // import bodyParser from 'koa-body'
 // import jwt from 'koa-jwt'
-import logger from "winston";
-import dotenv from "dotenv";
-import destroyable from "server-destroy";
-import koaBody from "koa-bodyparser";
+import logger from 'winston'
+import dotenv from 'dotenv'
+import destroyable from 'server-destroy'
+import koaBody from 'koa-bodyparser'
 
-import passport from "./auth/passport";
-import configureAuth from "./middleware/authenticate";
-import configureRouting from "./middleware/routing";
-import database from "./models/MongoDatabase";
-import router from "koa-router";
+import passport from './auth/passport'
+import configureAuth from './middleware/authenticate'
+import configureRouting from './middleware/routing'
+import database from './models/MongoDatabase'
+import router from 'koa-router'
 
 // if (module.hot) {
 //   // $FlowIgnore
 //   module.hot.accept("./auth/passport", () => {});
 // }
 
-dotenv.config();
+dotenv.config()
 
 // const koaWebpack = require('koa-webpack');
 // const webpackConfig = require('./webpack.config');
 
-logger.remove(logger.transports.Console);
-logger.add(logger.transports.Console, { level: "debug", colorize: true });
+logger.remove(logger.transports.Console)
+logger.add(logger.transports.Console, { level: 'debug', colorize: true })
 
-let authenticate = configureAuth();
+let authenticate = configureAuth()
 
 // const netLogger = require('./middleware/logger')
-let routing = configureRouting();
+let routing = configureRouting()
 
-const app = new Koa();
+const app = new Koa()
 // app.proxy = true; // this is needed if running from behind a reverse proxy
 
 // log response before sending out
@@ -51,14 +51,14 @@ if(config.env !== 'production'){
 // method ctx.json() and ctx.view() and ctx.log as well as renders the final response
 // app.use(responder({appRoot: config.appRoot, app: app}))
 // note: by default multipart requests are not parsed. More info: https://github.com/dlau/koa-body
-app.use(koaBody());
+app.use(koaBody())
 // app.use(netLogger.request());
 // app.use(new CSRF(config.csrf));
 // your authentication middleware
-app.use(passport.initialize());
+app.use(passport.initialize())
 
-app.use(authenticate.routes());
-app.use(authenticate.allowedMethods());
+app.use(authenticate.routes())
+app.use(authenticate.allowedMethods())
 
 // app.use(passport.session())
 //
@@ -68,32 +68,32 @@ app.use(authenticate.allowedMethods());
 // )
 
 // routing - will call your controllers, etc.
-app.use(routing.routes());
+app.use(routing.routes())
 
-app.use(routing.allowedMethods());
+app.use(routing.allowedMethods())
 
 // jwt token verification for any route containing /api/ segment (unless they are GET routes)
 
 // if you want to have some middleware running AFTER some controllers (controller will have to call await next)
 // remember that after controllers the logic will flow UP the stack so every middleware's code that comes
 // after the await next() will run too
-let server = app.listen(7000);
-destroyable(server);
+let server = app.listen(7000)
+destroyable(server)
 
-process.on("uncaughtException", () => {
-  server.destroy();
-});
+process.on('uncaughtException', () => {
+  server.destroy()
+})
 
-process.on("SIGTERM", () => {
-  server.destroy();
-});
+process.on('SIGTERM', () => {
+  server.destroy()
+})
 
-process.on("SIGINT", () => {
-  server.destroy();
-});
+process.on('SIGINT', () => {
+  server.destroy()
+})
 
 // process.on('SIGKILL', () => {
 //   server.destroy()sss
 // })
 
-logger.info("Application running on port 7000");
+logger.info('Application running on port 7000')

@@ -1,10 +1,7 @@
 /* @flow */
 'use strict'
 
-import {
-  GraphQLNonNull,
-  GraphQLString
-} from 'graphql'
+import { GraphQLNonNull, GraphQLString } from 'graphql'
 /*
 import { User } from '~/models/'
 

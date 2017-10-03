@@ -8,7 +8,7 @@ export default function configureUserApiController (router: any) {
   configureApiController(router)
 
   router.get('/img/:imgId', async ctx => {
-    let foundImage = (await Image.findById(ctx.params.imgId))
+    let foundImage = await Image.findById(ctx.params.imgId)
 
     if (foundImage) {
       console.log(foundImage)

@@ -1,13 +1,13 @@
 /* @flow */
-"use strict";
+'use strict'
 
 // import { List } from 'immutable'
 
-export type Gender = "Male" | "Female" | "Other";
+export type Gender = 'Male' | 'Female' | 'Other'
 
-export type Role = "Teacher" | "Student";
+export type Role = 'Teacher' | 'Student'
 
-export type CollectionName = "User";
+export type CollectionName = 'User'
 
 export type User = {
   email: string,
@@ -22,60 +22,60 @@ export type User = {
   setPassword: () => void,
   verifyPassword: (password: string) => boolean,
   generateJwt: () => any
-};
+}
 
 export type UserWithPassword = User & {
   password: string
-};
+}
 
 export type Credentials = {
   email: string,
   hash: string,
   salt: string
-};
+}
 
 export type InputCreds = {
   email: string,
   password: string
-};
+}
 
 export type UserWithCreds = User & {
   hash: string,
   salt: string
-};
+}
 
 export type Exercise = {
   id: string,
   name: string,
   data: string
-};
+}
 
 export type Lesson = {
   id: string,
   name: string,
   exercises: Array<Exercise>
-};
+}
 
 export type Level = {
   id: string,
   name: string,
   description: string,
   lessons: Array<Lesson>
-};
+}
 
 export type Achievement = {
   id: string,
   name: string,
-  type: "GENERAL" | "COURSE",
+  type: 'GENERAL' | 'COURSE',
   condition: string
-};
+}
 
 export type CourseDifficulty =
-  | "Beginner"
-  | "Intermediate"
-  | "Upper-intermediate"
-  | "Advanced"
-  | "Proficient";
+  | 'Beginner'
+  | 'Intermediate'
+  | 'Upper-intermediate'
+  | 'Advanced'
+  | 'Proficient'
 
 export type CourseInsertPayload = {
   name: string,
@@ -84,7 +84,7 @@ export type CourseInsertPayload = {
   levels: Array<Level>,
   achievements?: Array<Achievement>,
   difficulty: CourseDifficulty
-};
+}
 
 export type Course = {
   id: string,
@@ -95,7 +95,7 @@ export type Course = {
   levels: Array<Level>,
   achievements: Array<Achievement>,
   difficulty: CourseDifficulty
-};
+}
 
 export type CourseQueryPayload = {
   id?: string,
@@ -103,17 +103,17 @@ export type CourseQueryPayload = {
   description?: string,
   creatorEmail?: string,
   difficulty?: string
-};
+}
 
 export type Avatar = {
   email: string,
   img: ?Buffer,
   mimetype: ?string
-};
+}
 
-export type CollectionDataType = User | Course;
+export type CollectionDataType = User | Course
 
 export type CollectionData =
-  | { type: "user", payload: UserWithCreds }
-  | { type: "course", payload: Course }
-  | { type: "avatar", payload: Avatar };
+  | { type: 'user', payload: UserWithCreds }
+  | { type: 'course', payload: Course }
+  | { type: 'avatar', payload: Avatar }

@@ -1,10 +1,7 @@
 /* @flow */
 'use strict'
 
-import {
-  GraphQLString,
-  GraphQLList
-} from 'graphql'
+import { GraphQLString, GraphQLList } from 'graphql'
 
 import { Course, User } from '~/models/'
 
@@ -45,9 +42,8 @@ export const coursesByIds = {
   args: {
     ids: { type: new GraphQLList(GraphQLString) }
   },
-  resolve: (source: any, args: { ids: Array<string> }) => (
+  resolve: (source: any, args: { ids: Array<string> }) =>
     Course.find({ _id: { $in: args.ids } })
-  )
 }
 
 export const coursesByStudentEmail = {

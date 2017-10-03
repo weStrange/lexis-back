@@ -3,11 +3,7 @@
 
 // import { List } from 'immutable'
 
-import {
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLInt
-} from 'graphql'
+import { GraphQLNonNull, GraphQLString, GraphQLInt } from 'graphql'
 
 import { userType, Gender, Role } from './types'
 
@@ -40,14 +36,11 @@ export const addUser = {
     role: { type: Role },
     avatarUrl: { type: GraphQLString }
   },
-  resolve: async (
-    source: any,
-    args: AddUserArgs
-  ) => {
+  resolve: async (source: any, args: AddUserArgs) => {
     let newUser = {
       ...Utils.stripPassword({
         ...args,
-        registrationDate: (new Date()).toISOString(),
+        registrationDate: new Date().toISOString(),
         courses: []
       }),
       avatarUrl: args.avatarUrl || null,
@@ -69,9 +62,8 @@ export const updateUser = {
     avatarUrl: { type: GraphQLString },
     role: { type: Role }
   },
-  resolve: (source: any, args: any) => (
+  resolve: (source: any, args: any) =>
     User.findOneAndUpdate({ email: args.email }, args)
-  )
 }
 
 export const deleteUser = {

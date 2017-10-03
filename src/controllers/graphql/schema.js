@@ -1,10 +1,7 @@
 /* @flow */
 'use strict'
 
-import {
-  GraphQLObjectType,
-  GraphQLSchema
-} from 'graphql'
+import { GraphQLObjectType, GraphQLSchema } from 'graphql'
 
 import * as userMutations from './user/mutations'
 import * as userQueries from './user/queries'
@@ -26,7 +23,7 @@ const mutationType = new GraphQLObjectType({
   description: 'All mutations',
   fields: {
     ...userMutations,
-    ...courseMutations,
+    ...courseMutations
     // ...avatarMutations
   }
 })

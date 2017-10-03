@@ -5,9 +5,7 @@ const logger = require('winston')
 /**
  * Place this at the top of the stack
  */
-type LogResponseOptions = {
-
-}
+type LogResponseOptions = {}
 module.exports.response = function logResponse (options: LogResponseOptions) {
   return async function (ctx: any, next: () => void) {
     await next()
@@ -18,9 +16,7 @@ module.exports.response = function logResponse (options: LogResponseOptions) {
 /**
  * Place this AFTER bodyparser
  */
-type LogRequestOptions = {
-
-}
+type LogRequestOptions = {}
 module.exports.request = function logRequest (options: LogRequestOptions) {
   return async function (ctx: any, next: () => void) {
     logger.verbose(`New Request from ${ctx.ip}. Body:`)
