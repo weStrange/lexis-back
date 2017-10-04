@@ -13,7 +13,9 @@ import type { /* InputCreds, */ User as UserType, Credentials } from '~/types'
 let authRoutes = getRouter()
 
 const localAuthHandler = async (ctx, next) => {
-  ctx.body = await ctx.state.user.generateJwt()
+  const token = await ctx.state.user.generateJwt()
+  const user = ctx.state.user.toJSON()
+  ctx.body = { ...user, token }
   await next()
 }
 
