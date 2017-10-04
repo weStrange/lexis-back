@@ -17,12 +17,12 @@ export default function configureUserApiController (router: any) {
   configureApiController(router)
   router.post(
     '/graphql',
-    auth,
+    // auth,
     upload.single('variables.image'),
     mongoFileUpl,
     koaBody(),
     graphqlKoa({ schema })
   )
-  router.get('/graphql', auth, graphqlKoa({ schema }))
-  router.get('/graphiql', auth, graphiqlKoa({ endpointURL: '/graphql' }))
+  router.get('/graphql'/*, auth*/, graphqlKoa({ schema }))
+  router.get('/graphiql'/*, auth*/, graphiqlKoa({ endpointURL: '/graphql' }))
 }
