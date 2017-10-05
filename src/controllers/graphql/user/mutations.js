@@ -10,7 +10,6 @@ import { userType, Gender, Role } from './types'
 import { User } from '~/models/'
 import Utils from '~/utils'
 
-import { getHashAndSalt } from '~/auth/oauth'
 
 import type { Gender as GenderType, Role as RoleType } from '~/types'
 
