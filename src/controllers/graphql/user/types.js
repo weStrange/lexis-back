@@ -6,6 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLString,
+  GraphQLInt,
   GraphQLList
 } from 'graphql'
 
@@ -28,6 +29,14 @@ export const Role = new GraphQLEnumType({
   }
 })
 
+export const CourseSubscription = new GraphQLObjectType({
+  name: 'CourseSubscription',
+  fields: () => ({
+    course: { type: new GraphQLNonNull(GraphQLString) },
+    progress: { type: new GraphQLNonNull(GraphQLInt) }
+  })
+})
+
 export const userType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -39,7 +48,7 @@ export const userType = new GraphQLObjectType({
     gender: { type: Gender },
     achievements: { type: AchievementTypeEnum },
     role: { type: Role },
-    courses: { type: new GraphQLList(GraphQLString) },
+    courses: { type: new GraphQLList(CourseSubscription) },
     avatarUrl: { type: GraphQLString }
   })
 })

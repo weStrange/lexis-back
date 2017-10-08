@@ -54,6 +54,6 @@ export const coursesByStudentEmail = {
   resolve: async (source: any, args: { email: string }) => {
     const user = await User.findOne(args)
 
-    return Course.find({ _id: { $in: user.courses } })
+    return Course.find({ _id: { $in: user.courses.map(p => p.course) } })
   }
 }

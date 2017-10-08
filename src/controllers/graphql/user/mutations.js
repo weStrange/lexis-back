@@ -61,8 +61,31 @@ export const updateUser = {
     avatarUrl: { type: GraphQLString },
     role: { type: Role }
   },
-  resolve: (source: any, args: any) =>
+  resolve: async (source: any, args: any) =>
     User.findOneAndUpdate({ email: args.email }, args)
+}
+
+export const makeProgress = {
+  type: userType,
+  args: {
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    courseId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve: async (source: any, args: any) => {
+    let foundUser = await User.findOne({ email: args.email })
+    console.log(foundUser.courses.filter(s => s.course === args.courseId).length)
+    foundUser.courses = foundUser.courses.map((p) => p.course === args.courseId
+    ? {
+      ...p,
+      course: p.course,
+      progress: p.progress + 1
+    }
+    : p)
+    console.log(foundUser.courses)
+    foundUser.save()
+    console.log(foundUser.courses)
+    return foundUser
+  }
 }
 
 export const deleteUser = {
