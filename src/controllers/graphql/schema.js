@@ -8,7 +8,7 @@ import * as userQueries from './user/queries'
 import * as courseMutations from './course/mutations'
 import * as courseQueries from './course/queries'
 // import * as avatarMutations from './avatar/mutations'
-
+console.log(userMutations)
 const queryType = new GraphQLObjectType({
   name: 'Query',
   description: 'All queries',

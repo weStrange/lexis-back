@@ -1,7 +1,7 @@
 /* @flow */
 'use strict'
 
-import { GraphQLString, GraphQLList } from 'graphql'
+import { GraphQLString, GraphQLList, GraphQLInt, GraphQLNonNull } from 'graphql'
 
 import { userType } from './types'
 
@@ -23,4 +23,32 @@ export const users = {
   },
   resolve: (source: any, args: { emails: Array<string> }) =>
     User.find({ email: { $in: args.emails } })
+}
+
+export const progress = {
+  type: GraphQLInt,
+  args: {
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    courseId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve: async (source: any, args: { email: string, courseId: string }) => {
+    try {
+      const foundUser = await User
+        .findOne({ email: args.email })
+
+      if (!foundUser) {
+        return 0
+      }
+
+      const subscription = foundUser.courses
+        .filter((p) => p.course === args.courseId)[0]
+
+      return subscription.progress
+    }
+    catch (err) {
+      if (err) {
+        return null
+      }
+    }
+  }
 }

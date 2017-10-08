@@ -13,7 +13,18 @@ const jwt = require('jsonwebtoken')
 // convert the async version of method "sign" of JWT to use return Promise instead of callback
 const signAsync = promisify(jwt.sign, jwt)
 
-var userSchema = new mongoose.Schema({
+const courseSubscriptionSchema = new mongoose.Schema({
+  course: {
+    type: String,
+    required: true
+  },
+  progress: {
+    type: Number,
+    required: true
+  }
+})
+
+const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -40,7 +51,7 @@ var userSchema = new mongoose.Schema({
     default: 'Student'
   },
   avatarUrl: String,
-  courses: [String],
+  courses: [courseSubscriptionSchema],
   hash: String,
   salt: String
 })

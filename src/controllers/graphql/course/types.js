@@ -68,7 +68,7 @@ export const courseType = new GraphQLObjectType({
     creatorEmail: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     description: { type: new GraphQLNonNull(GraphQLString) },
-    students: { type: new GraphQLList(userType) },
+    students: { type: new GraphQLList(GraphQLString) },
     levels: { type: new GraphQLList(levelType) },
     achievements: { type: new GraphQLList(achievementType) },
     difficulty: { type: new GraphQLNonNull(Difficulty) },
